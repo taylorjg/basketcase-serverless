@@ -1,0 +1,19 @@
+frameworkVersion: '3'
+org: taylorjg
+app: basketcase
+service: basketcase
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - serverless-webpack
+
+functions:
+  hello:
+    handler: src/hello.handler
+    events:
+      - httpApi:
+          method: get
+          path: /hello
