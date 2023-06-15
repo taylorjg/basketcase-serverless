@@ -7,7 +7,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   environment:
-    BONSAI_URL: ${env:BONSAI_URL}
+    BONSAI_URL: ${param:bonsaiUrl}
 
 plugins:
   - serverless-webpack
