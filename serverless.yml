@@ -13,12 +13,6 @@ plugins:
   - serverless-webpack
 
 functions:
-  hello:
-    handler: src/hello.handler
-    events:
-      - httpApi:
-          method: get
-          path: /hello
   search:
     handler: src/search.handler
     events:
