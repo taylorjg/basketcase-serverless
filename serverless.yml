@@ -6,6 +6,8 @@ service: basketcase
 provider:
   name: aws
   runtime: nodejs18.x
+  environment:
+    BONSAI_URL: ${env:BONSAI_URL}
 
 plugins:
   - serverless-webpack
