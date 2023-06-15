@@ -1,10 +1,15 @@
 import * as C from "./constants";
 import * as U from "./utils";
 import { searchServiceImpl } from "./elasticsearch/searchServiceImpl";
+import packageJson from "../package.json";
 
 export async function handler(event) {
   return U.wrapHandlerImplementation("/api/search", async () => {
-    const body = JSON.parse(Buffer.from(event.body, "base64").toString());
+    console.warn("version:", packageJson.version);
+    const buffer = Buffer.from(event.body);
+    const text = buffer.toString();
+    const body = JSON.parse(text);
+    console.warn("body:", body);
     const searchOptions = {
       pageSize: body.pageSize ?? 10,
       currentPage: body.currentPage ?? 1,
@@ -12,6 +17,7 @@ export async function handler(event) {
       searchText: body.searchText ?? "",
       filters: body.filters ?? [],
     }
+    console.warn("searchOptions:", searchOptions);
     const myResponse = await searchServiceImpl(searchOptions)
     return myResponse;
   });

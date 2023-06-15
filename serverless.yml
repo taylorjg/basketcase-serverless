@@ -8,6 +8,8 @@ provider:
   runtime: nodejs18.x
   environment:
     BONSAI_URL: ${param:bonsaiUrl}
+  httpApi:
+    cors: true
 
 plugins:
   - serverless-webpack
