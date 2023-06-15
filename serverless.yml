@@ -19,3 +19,9 @@ functions:
       - httpApi:
           method: get
           path: /hello
+  search:
+    handler: src/search.handler
+    events:
+      - httpApi:
+          method: post
+          path: /api/search
