@@ -5,11 +5,11 @@ import packageJson from "../package.json";
 
 export async function handler(event) {
   return U.wrapHandlerImplementation("/api/search", async () => {
-    console.warn("version:", packageJson.version);
+    console.info("version:", packageJson.version);
     const buffer = Buffer.from(event.body);
     const text = buffer.toString();
     const body = JSON.parse(text);
-    console.warn("body:", body);
+    console.info("body:", body);
     const searchOptions = {
       pageSize: body.pageSize ?? 10,
       currentPage: body.currentPage ?? 1,
@@ -17,7 +17,7 @@ export async function handler(event) {
       searchText: body.searchText ?? "",
       filters: body.filters ?? [],
     }
-    console.warn("searchOptions:", searchOptions);
+    console.info("searchOptions:", searchOptions);
     const myResponse = await searchServiceImpl(searchOptions)
     return myResponse;
   });
