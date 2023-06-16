@@ -1,4 +1,4 @@
-import * as FD from "./facetDefinitions";
+import { FACET_DEFINITIONS } from "./facetDefinitions";
 
 const defaultDisplayNameFormatter = bucket => bucket.key
 
@@ -36,7 +36,7 @@ const elasticsearchHitsToMyResults = hits => ({
 })
 
 const elasticsearchAggsToMyFacets = (aggs, filters) => {
-  const myFacets = FD.FACET_DEFINITIONS.map(fd => {
+  const myFacets = FACET_DEFINITIONS.map(fd => {
     const filter = filters && filters.find(f => f.facetId === fd.facetId)
     const agg = aggs[fd.aggregationName][fd.aggregationName]
     const bucketsToFacetValuesFn = fd.isRange ? bucketsToRangeFacetValues : bucketsToTermsFacetValues

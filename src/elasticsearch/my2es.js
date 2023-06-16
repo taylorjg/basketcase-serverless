@@ -1,5 +1,5 @@
+import { FACET_DEFINITIONS, FACET_IDS_TO_FIELD_NAMES } from "./facetDefinitions";
 import * as C from "../constants";
-import * as FD from "./facetDefinitions";
 
 const outTermFilterFor = field => f => {
   if (f.terms && f.terms[field]) return false
@@ -57,7 +57,7 @@ export const addAggregationsToRequest = (request, filters) => {
     }
   }
   const aggs = request.body.aggs.global.aggs
-  FD.FACET_DEFINITIONS.forEach(fd => {
+  FACET_DEFINITIONS.forEach(fd => {
     if (fd.isRange) {
       addRangeAggregation(aggs, filters, fd.aggregationName, fd.fieldName, fd.ranges)
     } else {
@@ -68,7 +68,7 @@ export const addAggregationsToRequest = (request, filters) => {
 }
 
 const myFilterToTermsFilter = filter => {
-  const fieldName = FD.FACET_IDS_TO_FIELD_NAMES[filter.facetId]
+  const fieldName = FACET_IDS_TO_FIELD_NAMES[filter.facetId]
   return {
     terms: {
       [fieldName]: filter.keys
@@ -77,7 +77,7 @@ const myFilterToTermsFilter = filter => {
 }
 
 const myFilterToRangeFilter = filter => {
-  const fieldName = FD.FACET_IDS_TO_FIELD_NAMES[filter.facetId]
+  const fieldName = FACET_IDS_TO_FIELD_NAMES[filter.facetId]
   const f = {
     range: {
       [fieldName]: {}

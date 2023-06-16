@@ -1,20 +1,21 @@
 import * as ES from "elasticsearch";
-import * as ES2MY from "./es2my";
-import * as MY2ES from "./my2es";
+import { elasticsearchResponseToMyResponse } from "./es2my";
+import {
+  addAggregationsToRequest,
+  myFiltersToElasticsearchFilters,
+  mySortByToElasticsearchSort
+} from "./my2es";
 
-const esConfig = () => {
-  const BONSAI_URL = process.env.BONSAI_URL
-  return {
-    host: BONSAI_URL || 'localhost:9200'
-  }
+const esConfig = {
+  host: process.env.BONSAI_URL ?? "localhost:9200"
 }
 
-const client = new ES.Client(esConfig())
+const client = new ES.Client(esConfig)
 
 export const searchServiceImpl = async searchOptions => {
 
-  const esFilters = MY2ES.myFiltersToElasticsearchFilters(searchOptions.filters)
-  const esSort = MY2ES.mySortByToElasticsearchSort(searchOptions.sortBy)
+  const esFilters = myFiltersToElasticsearchFilters(searchOptions.filters)
+  const esSort = mySortByToElasticsearchSort(searchOptions.sortBy)
 
   const esRequest = {
     index: 'products',
@@ -64,8 +65,8 @@ export const searchServiceImpl = async searchOptions => {
   }
 
   try {
-    const esResponse = await client.search(MY2ES.addAggregationsToRequest(esRequest, esFilters))
-    return ES2MY.elasticsearchResponseToMyResponse(esResponse, searchOptions.filters)
+    const esResponse = await client.search(addAggregationsToRequest(esRequest, esFilters))
+    return elasticsearchResponseToMyResponse(esResponse, searchOptions.filters)
   } catch (error) {
     if (error.displayName && error.statusCode) {
       console.error(`[elasticsearch.searchServiceImpl#search]: ${error.displayName} (${error.statusCode}) ${error.message}`)
