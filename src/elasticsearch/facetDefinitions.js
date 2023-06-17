@@ -18,7 +18,6 @@ export const FACET_DEFINITIONS = [
     facetId: 1,
     aggregationName: 'fitType',
     displayName: 'Fit Type',
-    displayNameFormatter: null,
     fieldName: 'FitTypeName.keyword',
     isRange: false
   },
@@ -26,7 +25,6 @@ export const FACET_DEFINITIONS = [
     facetId: 2,
     aggregationName: 'brand',
     displayName: 'Brand',
-    displayNameFormatter: null,
     fieldName: 'Brand.keyword',
     isRange: false
   },
@@ -34,7 +32,6 @@ export const FACET_DEFINITIONS = [
     facetId: 3,
     aggregationName: 'colour',
     displayName: 'Colour',
-    displayNameFormatter: null,
     fieldName: 'Colour.keyword',
     isRange: false
   },

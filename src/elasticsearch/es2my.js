@@ -2,11 +2,16 @@ import { FACET_DEFINITIONS } from "./facetDefinitions";
 
 const defaultDisplayNameFormatter = bucket => bucket.key
 
-const filterContainsKey = (filter, key) => !!(filter && filter.keys.find(k => k === key))
+const filterContainsKey = (filter, key) => (filter?.keys ?? []).some(k => k === key)
 
-const bucketToCommonFacetValue = (filter, bucket, index, displayNameFormatter) => ({
-  index: index,
-  displayName: (displayNameFormatter || defaultDisplayNameFormatter)(bucket),
+const bucketToCommonFacetValue = (
+  filter,
+  bucket,
+  index,
+  displayNameFormatter = defaultDisplayNameFormatter
+) => ({
+  index,
+  displayName: displayNameFormatter(bucket),
   key: bucket.key,
   count: bucket.doc_count,
   selected: filterContainsKey(filter, bucket.key)
@@ -17,9 +22,11 @@ const bucketToTermsFacetValue = (filter, displayNameFormatter) => (bucket, index
 
 const bucketToRangeFacetValue = (filter, displayNameFormatter) => (bucket, index) => {
   const facetValue = bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter)
-  facetValue.from = bucket.from
-  facetValue.to = bucket.to
-  return facetValue
+  return {
+    ...facetValue,
+    from: bucket.from,
+    to: bucket.to
+  }
 }
 
 const bucketsToTermsFacetValues = (filter, buckets, displayNameFormatter) =>
@@ -30,14 +37,14 @@ const bucketsToRangeFacetValues = (filter, buckets, displayNameFormatter) =>
     .filter(bucket => bucket.doc_count)
     .map(bucketToRangeFacetValue(filter, displayNameFormatter))
 
-const elasticsearchHitsToMyResults = hits => ({
+const esHitsToMyResults = hits => ({
   total: hits.total,
   products: hits.hits.map(hit => hit._source)
 })
 
-const elasticsearchAggsToMyFacets = (aggs, filters) => {
-  const myFacets = FACET_DEFINITIONS.map(fd => {
-    const filter = filters && filters.find(f => f.facetId === fd.facetId)
+const esAggsToMyFacets = (aggs, filters = []) => {
+  return FACET_DEFINITIONS.map(fd => {
+    const filter = filters.find(f => f.facetId === fd.facetId)
     const agg = aggs[fd.aggregationName][fd.aggregationName]
     const bucketsToFacetValuesFn = fd.isRange ? bucketsToRangeFacetValues : bucketsToTermsFacetValues
     return {
@@ -47,10 +54,9 @@ const elasticsearchAggsToMyFacets = (aggs, filters) => {
       facetValues: bucketsToFacetValuesFn(filter, agg.buckets, fd.displayNameFormatter)
     }
   })
-  return Array.prototype.concat.apply([], myFacets)
 }
 
 export const elasticsearchResponseToMyResponse = (response, filters) => ({
-  results: elasticsearchHitsToMyResults(response.hits),
-  facets: elasticsearchAggsToMyFacets(response.aggregations.global, filters)
+  results: esHitsToMyResults(response.hits),
+  facets: esAggsToMyFacets(response.aggregations.global, filters)
 })
