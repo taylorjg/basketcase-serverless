@@ -111,6 +111,6 @@ export const mySortByToElasticsearchSort = sortBy => {
     case C.SORT_BY_PRICE_HIGH_TO_LOW: return { 'Price': { order: 'desc' } }
     case C.SORT_BY_AVERAGE_RATING: return { 'RatingValue': { order: 'desc' } }
     case C.SORT_BY_REVIEW_COUNT: return { 'ReviewCount': { order: 'desc' } }
-    default: mySortByToElasticsearchSort(C.SORT_BY_PRICE_LOW_TO_HIGH)
+    default: mySortByToElasticsearchSort(C.DEFAULT_SORT_BY)
   }
 }

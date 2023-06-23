@@ -1,26 +1,30 @@
 import { searchServiceImpl } from "./elasticsearch/searchServiceImpl";
 import * as C from "./constants";
 import * as U from "./utils";
-import packageJson from "../package.json";
+
+const makeSearchOptions = (eventBody) => {
+  if (!eventBody) return C.DEFAULT_SEARCH_OPTIONS;
+
+  const buffer = Buffer.from(eventBody);
+  const text = buffer.toString();
+  const requestBody = JSON.parse(text);
+  console.info("requestBody:", requestBody);
+
+  const searchOptions = {
+    pageSize: requestBody.pageSize ?? C.DEFAULT_PAGE_SIZE,
+    currentPage: requestBody.currentPage ?? C.DEFAULT_CURRENT_PAGE,
+    sortBy: requestBody.sortBy ?? C.DEFAULT_SORT_BY,
+    searchText: requestBody.searchText ?? C.DEFAULT_SEARCH_TEXT,
+    filters: requestBody.filters ?? C.DEFAULT_FILTERS,
+  }
+
+  return searchOptions;
+};
 
 export async function handler(event) {
   return U.wrapHandlerImplementation("/api/search", async () => {
-    console.info("version:", packageJson.version);
-
-    const buffer = Buffer.from(event.body);
-    const text = buffer.toString();
-    const body = JSON.parse(text);
-    console.info("body:", body);
-    
-    const searchOptions = {
-      pageSize: body.pageSize ?? 10,
-      currentPage: body.currentPage ?? 1,
-      sortBy: body.sortBy ?? C.SORT_BY_PRICE_LOW_TO_HIGH,
-      searchText: body.searchText ?? "",
-      filters: body.filters ?? [],
-    }
+    const searchOptions = makeSearchOptions(event.body);
     console.info("searchOptions:", searchOptions);
-
     return searchServiceImpl(searchOptions)
   });
 };
