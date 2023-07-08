@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "test": "vitest run --reporter verbose"
+    "test": "vitest run --reporter verbose",
+    "deploy": "serverless deploy",
+    "info": "serverless info",
+    "invoke": "serverless invoke -f search",
+    "invoke:local": "serverless invoke local -f search"
   },
   "author": "Jonathan Taylor",
   "license": "MIT",
