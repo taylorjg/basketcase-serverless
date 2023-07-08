@@ -60,5 +60,5 @@ const esHitsToAgnosticResults = (hits) => ({
 
 export const esResponseToAgnosticResponse = (response, filters) => ({
   results: esHitsToAgnosticResults(response.hits),
-  facets: esAggsToAgnosticFacets(response.aggregations.global, filters),
+  facets: esAggsToAgnosticFacets(response.aggregations.all_documents.common_filters, filters),
 });

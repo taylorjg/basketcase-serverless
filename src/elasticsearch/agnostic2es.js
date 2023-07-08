@@ -48,15 +48,25 @@ const addRangeAggregation = (aggs, activeFilters, name, field, ranges) => {
   };
 };
 
-export const addAggregationsToRequest = (request, filters) => {
+export const addAggregationsToRequest = (request, filters, searchOptionsFilters) => {
   filters = filters || [];
   request.body.aggs = {
-    global: {
+    all_documents: {
       global: {},
-      aggs: {},
+      // aggs: {},
+      aggs: {
+        common_filters: {
+          filter: {
+            bool: {
+              filter: searchOptionsFilters,
+            },
+          },
+          aggs: {},
+        },
+      },
     },
   };
-  const aggs = request.body.aggs.global.aggs;
+  const aggs = request.body.aggs.all_documents.aggs.common_filters.aggs;
   FACET_DEFINITIONS.forEach((fd) => {
     if (fd.isRange) {
       addRangeAggregation(aggs, filters, fd.aggregationName, fd.fieldName, fd.ranges);

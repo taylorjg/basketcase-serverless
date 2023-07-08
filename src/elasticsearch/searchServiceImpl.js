@@ -10,31 +10,47 @@ const esConfig = {
   host: process.env.BONSAI_URL ?? "localhost:9200",
 };
 
-const client = new ES.Client(esConfig);
+const esClient = new ES.Client(esConfig);
+
+const INDEX_NAME = "products";
+
+const TYPE_NAME = "washers";
+
+const FIELDS_TO_RETURN = [
+  "Code",
+  "FitTypeName",
+  "Brand",
+  "Colour",
+  "Price",
+  "FullTitle",
+  "EnergyRating",
+  "Image",
+  "ReviewCount",
+  "RatingValue",
+];
 
 export const searchServiceImpl = async (searchOptions) => {
-  const esFilters = agnosticFiltersToESFilters(searchOptions.filters);
+  const searchOptionsFilters = [];
+
+  if (searchOptions.searchText) {
+    searchOptionsFilters.push({
+      query_string: {
+        query: searchOptions.searchText,
+      },
+    });
+  }
+
+  const facetFilters = agnosticFiltersToESFilters(searchOptions.filters);
   const esSort = agnosticSortByToESSort(searchOptions.sortBy);
 
   const esRequest = {
-    index: "products",
-    type: "washers",
+    index: INDEX_NAME,
+    type: TYPE_NAME,
     body: {
       query: {
         match_all: {},
       },
-      _source: [
-        "Code",
-        "FitTypeName",
-        "Brand",
-        "Colour",
-        "Price",
-        "FullTitle",
-        "EnergyRating",
-        "Image",
-        "ReviewCount",
-        "RatingValue",
-      ],
+      _source: FIELDS_TO_RETURN,
     },
   };
 
@@ -43,28 +59,22 @@ export const searchServiceImpl = async (searchOptions) => {
     esRequest.body.from = searchOptions.pageSize * (searchOptions.currentPage - 1);
   }
 
-  if (esSort) {
-    esRequest.body.sort = esSort;
-  }
+  esRequest.body.sort = esSort;
 
-  if (searchOptions.searchText) {
-    esRequest.body.query = {
-      query_string: {
-        query: searchOptions.searchText,
-      },
-    };
-  }
-
-  if (esFilters.length) {
+  if (facetFilters.length || searchOptionsFilters.length) {
     esRequest.body.query = {
       bool: {
-        filter: esFilters,
+        filter: [...searchOptionsFilters, ...facetFilters],
       },
     };
   }
 
+  addAggregationsToRequest(esRequest, facetFilters, searchOptionsFilters);
+
   try {
-    const esResponse = await client.search(addAggregationsToRequest(esRequest, esFilters));
+    console.info("esRequest:", JSON.stringify(esRequest, null, 2));
+    const esResponse = await esClient.search(esRequest);
+    console.info("esResponse:", JSON.stringify(esResponse, null, 2));
     return esResponseToAgnosticResponse(esResponse, searchOptions.filters);
   } catch (error) {
     if (error.displayName && error.statusCode) {
