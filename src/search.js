@@ -16,7 +16,7 @@ const makeSearchOptions = (eventBody) => {
     sortBy: requestBody.sortBy ?? C.DEFAULT_SORT_BY,
     searchText: requestBody.searchText ?? C.DEFAULT_SEARCH_TEXT,
     filters: requestBody.filters ?? C.DEFAULT_FILTERS,
-  }
+  };
 
   return searchOptions;
 };
@@ -25,6 +25,6 @@ export async function handler(event) {
   return U.wrapHandlerImplementation("/api/search", async () => {
     const searchOptions = makeSearchOptions(event.body);
     console.info("searchOptions:", searchOptions);
-    return searchServiceImpl(searchOptions)
+    return searchServiceImpl(searchOptions);
   });
-};
+}
