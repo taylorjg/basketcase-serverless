@@ -1,10 +1,10 @@
 import * as ES from "elasticsearch";
-import { elasticsearchResponseToMyResponse } from "./es2my";
+import { esResponseToAgnosticResponse } from "./es2agnostic";
 import {
   addAggregationsToRequest,
-  myFiltersToElasticsearchFilters,
-  mySortByToElasticsearchSort
-} from "./my2es";
+  agnosticFiltersToESFilters,
+  agnosticSortByToESSort
+} from "./agnostic2es";
 
 const esConfig = {
   host: process.env.BONSAI_URL ?? "localhost:9200"
@@ -14,8 +14,8 @@ const client = new ES.Client(esConfig)
 
 export const searchServiceImpl = async searchOptions => {
 
-  const esFilters = myFiltersToElasticsearchFilters(searchOptions.filters)
-  const esSort = mySortByToElasticsearchSort(searchOptions.sortBy)
+  const esFilters = agnosticFiltersToESFilters(searchOptions.filters)
+  const esSort = agnosticSortByToESSort(searchOptions.sortBy)
 
   const esRequest = {
     index: 'products',
@@ -66,7 +66,7 @@ export const searchServiceImpl = async searchOptions => {
 
   try {
     const esResponse = await client.search(addAggregationsToRequest(esRequest, esFilters))
-    return elasticsearchResponseToMyResponse(esResponse, searchOptions.filters)
+    return esResponseToAgnosticResponse(esResponse, searchOptions.filters)
   } catch (error) {
     if (error.displayName && error.statusCode) {
       console.error(`[elasticsearch.searchServiceImpl#search]: ${error.displayName} (${error.statusCode}) ${error.message}`)

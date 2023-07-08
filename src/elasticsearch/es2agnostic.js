@@ -37,12 +37,7 @@ const bucketsToRangeFacetValues = (filter, buckets, displayNameFormatter) =>
     .filter(bucket => bucket.doc_count)
     .map(bucketToRangeFacetValue(filter, displayNameFormatter))
 
-const esHitsToMyResults = hits => ({
-  total: hits.total,
-  products: hits.hits.map(hit => hit._source)
-})
-
-const esAggsToMyFacets = (aggs, filters = []) => {
+const esAggsToAgnosticFacets = (aggs, filters = []) => {
   return FACET_DEFINITIONS.map(fd => {
     const filter = filters.find(f => f.facetId === fd.facetId)
     const agg = aggs[fd.aggregationName][fd.aggregationName]
@@ -56,7 +51,12 @@ const esAggsToMyFacets = (aggs, filters = []) => {
   })
 }
 
-export const elasticsearchResponseToMyResponse = (response, filters) => ({
-  results: esHitsToMyResults(response.hits),
-  facets: esAggsToMyFacets(response.aggregations.global, filters)
+const esHitsToAgnosticResults = hits => ({
+  total: hits.total,
+  products: hits.hits.map(hit => hit._source)
+})
+
+export const esResponseToAgnosticResponse = (response, filters) => ({
+  results: esHitsToAgnosticResults(response.hits),
+  facets: esAggsToAgnosticFacets(response.aggregations.global, filters)
 })

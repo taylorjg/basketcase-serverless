@@ -67,7 +67,7 @@ export const addAggregationsToRequest = (request, filters) => {
   return request
 }
 
-const myFilterToTermsFilter = filter => {
+const agnosticFilterToESTermsFilter = filter => {
   const fieldName = FACET_IDS_TO_FIELD_NAMES[filter.facetId]
   return {
     terms: {
@@ -76,7 +76,7 @@ const myFilterToTermsFilter = filter => {
   }
 }
 
-const myFilterToRangeFilter = filter => {
+const agnosticFilterToESRangeFilter = filter => {
   const fieldName = FACET_IDS_TO_FIELD_NAMES[filter.facetId]
   const f = {
     range: {
@@ -92,25 +92,25 @@ const myFilterToRangeFilter = filter => {
   return f
 }
 
-const myFilterToElasticsearchFilter = filter => {
+const agnosticFilterToESFilter = filter => {
   switch (filter.type) {
-    case 'terms': return myFilterToTermsFilter(filter)
-    case 'range': return myFilterToRangeFilter(filter)
+    case 'terms': return agnosticFilterToESTermsFilter(filter)
+    case 'range': return agnosticFilterToESRangeFilter(filter)
     default: return null
   }
 }
 
-export const myFiltersToElasticsearchFilters = filters =>
+export const agnosticFiltersToESFilters = filters =>
   filters
-    .map(myFilterToElasticsearchFilter)
-    .filter(f => f)
+    .map(agnosticFilterToESFilter)
+    .filter(Boolean)
 
-export const mySortByToElasticsearchSort = sortBy => {
+export const agnosticSortByToESSort = sortBy => {
   switch (sortBy) {
     case C.SORT_BY_PRICE_LOW_TO_HIGH: return { 'Price': { order: 'asc' } }
     case C.SORT_BY_PRICE_HIGH_TO_LOW: return { 'Price': { order: 'desc' } }
     case C.SORT_BY_AVERAGE_RATING: return { 'RatingValue': { order: 'desc' } }
     case C.SORT_BY_REVIEW_COUNT: return { 'ReviewCount': { order: 'desc' } }
-    default: mySortByToElasticsearchSort(C.DEFAULT_SORT_BY)
+    default: agnosticSortByToESSort(C.DEFAULT_SORT_BY)
   }
 }
