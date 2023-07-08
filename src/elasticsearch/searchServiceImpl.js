@@ -40,8 +40,7 @@ export const searchServiceImpl = async (searchOptions) => {
 
   if (searchOptions.pageSize && searchOptions.currentPage) {
     esRequest.body.size = searchOptions.pageSize;
-    esRequest.body.from =
-      searchOptions.pageSize * (searchOptions.currentPage - 1);
+    esRequest.body.from = searchOptions.pageSize * (searchOptions.currentPage - 1);
   }
 
   if (esSort) {
@@ -65,9 +64,7 @@ export const searchServiceImpl = async (searchOptions) => {
   }
 
   try {
-    const esResponse = await client.search(
-      addAggregationsToRequest(esRequest, esFilters)
-    );
+    const esResponse = await client.search(addAggregationsToRequest(esRequest, esFilters));
     return esResponseToAgnosticResponse(esResponse, searchOptions.filters);
   } catch (error) {
     if (error.displayName && error.statusCode) {
