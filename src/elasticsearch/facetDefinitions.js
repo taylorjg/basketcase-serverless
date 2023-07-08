@@ -58,7 +58,6 @@ export const FACET_DEFINITIONS = [
   },
 ];
 
-export const FACET_IDS_TO_FIELD_NAMES = FACET_DEFINITIONS.reduce((acc, fd) => {
-  acc[fd.facetId] = fd.fieldName;
-  return acc;
-}, {});
+export const FACET_IDS_TO_FIELD_NAMES = Object.fromEntries(
+  FACET_DEFINITIONS.map(({ facetId, fieldName }) => [facetId, fieldName])
+);
