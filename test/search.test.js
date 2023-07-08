@@ -12,7 +12,7 @@ const findFacetValue = (facet, displayName) => {
 };
 
 describe("search tests", () => {
-  it("vanilla search", async () => {
+  it("vanilla", async () => {
     const response = await axios.post("/api/search");
     const { results, facets } = response.data;
 
@@ -32,7 +32,7 @@ describe("search tests", () => {
     expect(builtInFacetValue.count).toBe(12);
   });
 
-  it("search with search text", async () => {
+  it("with search text", async () => {
     const response = await axios.post("/api/search", { searchText: "candy" });
     const { results, facets } = response.data;
 
