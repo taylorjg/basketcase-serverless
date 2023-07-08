@@ -1,7 +1,4 @@
-import {
-  FACET_DEFINITIONS,
-  FACET_IDS_TO_FIELD_NAMES,
-} from "./facetDefinitions";
+import { FACET_DEFINITIONS, FACET_IDS_TO_FIELD_NAMES } from "./facetDefinitions";
 import * as C from "../constants";
 
 const outTermFilterFor = (field) => (f) => {
@@ -62,13 +59,7 @@ export const addAggregationsToRequest = (request, filters) => {
   const aggs = request.body.aggs.global.aggs;
   FACET_DEFINITIONS.forEach((fd) => {
     if (fd.isRange) {
-      addRangeAggregation(
-        aggs,
-        filters,
-        fd.aggregationName,
-        fd.fieldName,
-        fd.ranges
-      );
+      addRangeAggregation(aggs, filters, fd.aggregationName, fd.fieldName, fd.ranges);
     } else {
       addTermAggregation(aggs, filters, fd.aggregationName, fd.fieldName);
     }

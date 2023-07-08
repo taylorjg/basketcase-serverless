@@ -2,8 +2,7 @@ import { FACET_DEFINITIONS } from "./facetDefinitions";
 
 const defaultDisplayNameFormatter = (bucket) => bucket.key;
 
-const filterContainsKey = (filter, key) =>
-  (filter?.keys ?? []).some((k) => k === key);
+const filterContainsKey = (filter, key) => (filter?.keys ?? []).some((k) => k === key);
 
 const bucketToCommonFacetValue = (
   filter,
@@ -18,24 +17,17 @@ const bucketToCommonFacetValue = (
   selected: filterContainsKey(filter, bucket.key),
 });
 
-const bucketToTermsFacetValue =
-  (filter, displayNameFormatter) => (bucket, index) =>
-    bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter);
+const bucketToTermsFacetValue = (filter, displayNameFormatter) => (bucket, index) =>
+  bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter);
 
-const bucketToRangeFacetValue =
-  (filter, displayNameFormatter) => (bucket, index) => {
-    const facetValue = bucketToCommonFacetValue(
-      filter,
-      bucket,
-      index,
-      displayNameFormatter
-    );
-    return {
-      ...facetValue,
-      from: bucket.from,
-      to: bucket.to,
-    };
+const bucketToRangeFacetValue = (filter, displayNameFormatter) => (bucket, index) => {
+  const facetValue = bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter);
+  return {
+    ...facetValue,
+    from: bucket.from,
+    to: bucket.to,
   };
+};
 
 const bucketsToTermsFacetValues = (filter, buckets, displayNameFormatter) =>
   buckets.map(bucketToTermsFacetValue(filter, displayNameFormatter));
@@ -56,11 +48,7 @@ const esAggsToAgnosticFacets = (aggs, filters = []) => {
       facetId: fd.facetId,
       isRange: fd.isRange,
       displayName: fd.displayName,
-      facetValues: bucketsToFacetValuesFn(
-        filter,
-        agg.buckets,
-        fd.displayNameFormatter
-      ),
+      facetValues: bucketsToFacetValuesFn(filter, agg.buckets, fd.displayNameFormatter),
     };
   });
 };
