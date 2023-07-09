@@ -5,6 +5,85 @@ import {
   agnosticFiltersToESFilters,
   agnosticSortByToESSort,
 } from "./agnostic2es";
+import { facetDescriptions, facetDescriptionsDictionary } from "./facetDefinitions";
+
+const makeFacetFilterDictionaryEntry = (selectedFacets) => (facetDescription) => {
+  const name = facetDescription.name;
+  const selectedFacet = selectedFacets.find((selectedFacet) => selectedFacet.name === name);
+  const options = selectedFacet?.options ?? [];
+  const filter = options.length ? facetDescription.makeFilter(options) : undefined;
+  return [name, filter];
+};
+
+// Make a dictionary where the keys are facet names (e.g. "fitTypeFacet")
+// and the values are Elasticsearch filter expression objects representing
+// all the currently selected options for that facet. If a particular
+// facet does not have any currently selected options, there won't be an
+// entry for that facet in the dictionary.
+const makeFacetFiltersDictionary = (facetDescriptions, selectedFacets) => {
+  const facetFilterDictionaryEntries = facetDescriptions
+    .map(makeFacetFilterDictionaryEntry(selectedFacets))
+    .filter(([, filter]) => Boolean(filter));
+  return Object.fromEntries(facetFilterDictionaryEntries);
+};
+
+const makeSubAggregation = (facetFiltersDictionary) => (facetDescription) => {
+  const name = facetDescription.name;
+
+  const filtersForOtherFacetSelections = Object.entries(facetFiltersDictionary)
+    .filter(([key]) => key !== name)
+    .map(([, value]) => value);
+
+  const filter = filtersForOtherFacetSelections.length
+    ? { bool: { filter: filtersForOtherFacetSelections } }
+    : { match_all: {} }; // placeholder match_all filter to maintain consistent query structure
+
+  const aggregation = {
+    filter,
+    aggregations: {
+      [name]: facetDescription.definition,
+    },
+  };
+
+  return [name, aggregation];
+};
+
+const makeGlobalAggregation = (queryFilters, facetDescriptions, facetFiltersDictionary) => {
+  const aggregationsEntries = facetDescriptions.map(makeSubAggregation(facetFiltersDictionary));
+  const aggregations = Object.fromEntries(aggregationsEntries);
+
+  return {
+    all_documents: {
+      global: {},
+      aggregations: {
+        common_filters: {
+          filter: {
+            bool: {
+              filter: queryFilters,
+            },
+          },
+          aggregations,
+        },
+      },
+    },
+  };
+};
+
+const toSelectedFacets = (searchOptionsFilters) => {
+  const options = [];
+  for (const searchOptionsFilter of searchOptionsFilters) {
+    const facetDescription = facetDescriptions.find(
+      ({ facetId }) => facetId === searchOptionsFilter.facetId
+    );
+    if (facetDescription) {
+      options.push({
+        name: facetDescription.name,
+        options: searchOptionsFilter.keys,
+      });
+    }
+  }
+  return options;
+};
 
 const esConfig = {
   host: process.env.BONSAI_URL ?? "localhost:9200",
@@ -30,15 +109,28 @@ const FIELDS_TO_RETURN = [
 ];
 
 export const searchServiceImpl = async (searchOptions) => {
-  const searchOptionsFilters = [];
+  const queryFilters = [];
 
   if (searchOptions.searchText) {
-    searchOptionsFilters.push({
+    queryFilters.push({
       query_string: {
         query: searchOptions.searchText,
       },
     });
   }
+
+  const selectedFacets = toSelectedFacets(searchOptions.filters);
+  console.log("selectedFacets:", JSON.stringify(selectedFacets, null, 2));
+
+  const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
+  console.log("facetFiltersDictionary:", JSON.stringify(facetFiltersDictionary, null, 2));
+
+  const globalAggregation = makeGlobalAggregation(
+    queryFilters,
+    facetDescriptions,
+    facetFiltersDictionary
+  );
+  console.log("globalAggregation:", JSON.stringify(globalAggregation, null, 2));
 
   const facetFilters = agnosticFiltersToESFilters(searchOptions.filters);
   const esSort = agnosticSortByToESSort(searchOptions.sortBy);
@@ -61,15 +153,15 @@ export const searchServiceImpl = async (searchOptions) => {
 
   esRequest.body.sort = esSort;
 
-  if (facetFilters.length || searchOptionsFilters.length) {
+  if (facetFilters.length || queryFilters.length) {
     esRequest.body.query = {
       bool: {
-        filter: [...searchOptionsFilters, ...facetFilters],
+        filter: [...queryFilters, ...facetFilters],
       },
     };
   }
 
-  addAggregationsToRequest(esRequest, facetFilters, searchOptionsFilters);
+  addAggregationsToRequest(esRequest, facetFilters, queryFilters);
 
   try {
     console.info("esRequest:", JSON.stringify(esRequest, null, 2));

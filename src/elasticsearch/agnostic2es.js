@@ -48,17 +48,15 @@ const addRangeAggregation = (aggs, activeFilters, name, field, ranges) => {
   };
 };
 
-export const addAggregationsToRequest = (request, filters, searchOptionsFilters) => {
-  filters = filters || [];
+export const addAggregationsToRequest = (request, filters = [], queryFilters = []) => {
   request.body.aggs = {
     all_documents: {
       global: {},
-      // aggs: {},
       aggs: {
         common_filters: {
           filter: {
             bool: {
-              filter: searchOptionsFilters,
+              filter: queryFilters,
             },
           },
           aggs: {},

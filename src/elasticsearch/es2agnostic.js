@@ -45,6 +45,7 @@ const esAggsToAgnosticFacets = (aggs, filters = []) => {
       ? bucketsToRangeFacetValues
       : bucketsToTermsFacetValues;
     return {
+      name: fd.name,
       facetId: fd.facetId,
       isRange: fd.isRange,
       displayName: fd.displayName,
