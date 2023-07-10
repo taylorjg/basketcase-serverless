@@ -16,6 +16,6 @@ describe("searchServiceImpl tests", () => {
     };
     const result = await searchServiceImpl(searchOptions);
     expect(result).toBeDefined();
-    console.dir(result, { depth: null });
+    console.log("searchServiceImpl result:", JSON.stringify(result, null, 2));
   });
 });

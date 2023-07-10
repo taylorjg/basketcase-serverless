@@ -46,10 +46,11 @@ const esAggregationsToAgnosticFacets = (aggregations, filters = []) => {
       : bucketsToTermsFacetValues;
     return {
       name: fd.name,
-      facetId: fd.facetId,
-      isRange: fd.isRange,
       displayName: fd.displayName,
+      type: fd.type,
       facetValues: bucketsToFacetValuesFn(filter, aggregation.buckets, fd.displayNameFormatter),
+      isRange: fd.isRange,
+      facetId: fd.facetId,
     };
   });
 };

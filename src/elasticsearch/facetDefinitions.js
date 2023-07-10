@@ -15,18 +15,32 @@ const priceDisplayNameFormatter = (bucket) => {
   return bucket.key;
 };
 
+const makeRangeDatum = ({ from, to }) => {
+  const maybeFrom = from !== undefined ? { from } : undefined;
+  const maybeTo = to !== undefined ? { to } : undefined;
+  const fromKeyPart = maybeFrom ? from : "undefined";
+  const toKeyPart = maybeTo ? to : "undefined";
+  const key = `${fromKeyPart}-${toKeyPart}`;
+
+  return {
+    ...maybeFrom,
+    ...maybeTo,
+    key,
+  };
+};
+
 const priceRangeDataWithoutDisplayNames = [
-  { to: 200, key: "unspecified-200" },
-  { from: 200, to: 250, key: "200-250" },
-  { from: 250, to: 300, key: "250-300" },
-  { from: 300, to: 350, key: "300-350" },
-  { from: 350, to: 400, key: "350-400" },
-  { from: 400, to: 450, key: "400-450" },
-  { from: 450, to: 500, key: "450-500" },
-  { from: 500, to: 550, key: "500-550" },
-  { from: 550, to: 600, key: "550-600" },
-  { from: 600, to: 650, key: "600-650" },
-  { from: 650, key: "650-unspecified" },
+  makeRangeDatum({ to: 200 }),
+  makeRangeDatum({ from: 200, to: 250 }),
+  makeRangeDatum({ from: 250, to: 300 }),
+  makeRangeDatum({ from: 300, to: 350 }),
+  makeRangeDatum({ from: 350, to: 400 }),
+  makeRangeDatum({ from: 400, to: 450 }),
+  makeRangeDatum({ from: 450, to: 500 }),
+  makeRangeDatum({ from: 500, to: 550 }),
+  makeRangeDatum({ from: 550, to: 600 }),
+  makeRangeDatum({ from: 600, to: 650 }),
+  makeRangeDatum({ from: 650 }),
 ];
 
 const priceRangeDataWithDisplayNames = priceRangeDataWithoutDisplayNames.map((bucket) => ({
@@ -102,19 +116,7 @@ const priceFacet = {
   displayNameFormatter: priceDisplayNameFormatter,
   fieldName: "Price",
   isRange: true,
-  ranges: [
-    { to: 200 },
-    { from: 200, to: 250 },
-    { from: 250, to: 300 },
-    { from: 300, to: 350 },
-    { from: 350, to: 400 },
-    { from: 400, to: 450 },
-    { from: 450, to: 500 },
-    { from: 500, to: 550 },
-    { from: 550, to: 600 },
-    { from: 600, to: 650 },
-    { from: 650 },
-  ],
+  ranges: priceRangeDataWithoutDisplayNames,
 };
 
 export const FACET_DEFINITIONS = [fitTypeFacet, brandFacet, colourFacet, priceFacet];

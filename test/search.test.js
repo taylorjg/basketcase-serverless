@@ -1,15 +1,9 @@
 import "dotenv/config";
 import axios from "axios";
 
+import { findFacet, findFacetValue } from "./testHelpers";
+
 axios.defaults.baseURL = process.env.SERVERLESS_URL;
-
-const findFacet = (facets, displayName) => {
-  return facets.find((facet) => facet.displayName === displayName);
-};
-
-const findFacetValue = (facet, displayName) => {
-  return facet.facetValues.find((facetValue) => facetValue.displayName === displayName);
-};
 
 describe("search tests", () => {
   it("vanilla", async () => {
