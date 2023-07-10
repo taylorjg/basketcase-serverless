@@ -1,4 +1,4 @@
-import { FACET_DEFINITIONS } from "./facetDefinitions";
+import { facetDescriptions } from "./facetDefinitions";
 
 const defaultDisplayNameFormatter = (bucket) => bucket.key;
 
@@ -38,7 +38,7 @@ const bucketsToRangeFacetValues = (filter, buckets, displayNameFormatter) =>
     .map(bucketToRangeFacetValue(filter, displayNameFormatter));
 
 const esAggregationsToAgnosticFacets = (aggregations, filters = []) => {
-  return FACET_DEFINITIONS.map((fd) => {
+  return facetDescriptions.map((fd) => {
     const filter = filters.find((f) => f.facetId === fd.facetId);
     const aggregation = aggregations[fd.name][fd.name];
     const bucketsToFacetValuesFn = fd.isRange

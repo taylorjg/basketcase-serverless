@@ -1,19 +1,19 @@
-export const makeTermsFilter = (field, options) => ({
+export const makeTermsFilter = (field, selectedFacetValues) => ({
   terms: {
-    [field]: options,
+    [field]: selectedFacetValues,
   },
 });
 
-export const makeRangeFilter = (rangeData, field, options) => {
-  const ranges = rangeData.filter((rangeDatum) => options.includes(rangeDatum.key));
+export const makeRangeFilter = (ranges, field, selectedFacetValues) => {
+  const selectedRanges = ranges.filter((range) => selectedFacetValues.includes(range.key));
 
-  if (ranges.length === 0) {
+  if (selectedRanges.length === 0) {
     return undefined;
   }
 
-  const makeRange = (rangeDatum) => {
-    const maybeGte = rangeDatum.from !== undefined ? { gte: rangeDatum.from } : undefined;
-    const maybeLt = rangeDatum.to !== undefined ? { lt: rangeDatum.to } : undefined;
+  const makeRangeExpression = (range) => {
+    const maybeGte = range.from !== undefined ? { gte: range.from } : undefined;
+    const maybeLt = range.to !== undefined ? { lt: range.to } : undefined;
 
     return {
       range: {
@@ -27,7 +27,7 @@ export const makeRangeFilter = (rangeData, field, options) => {
 
   return {
     bool: {
-      should: ranges.map(makeRange),
+      should: selectedRanges.map(makeRangeExpression),
     },
   };
 };

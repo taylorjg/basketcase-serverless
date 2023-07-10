@@ -57,7 +57,7 @@ const fitTypeFacet = {
       field: "FitTypeName.keyword",
     },
   },
-  makeFilter: (options) => makeTermsFilter("FitTypeName.keyword", options),
+  makeFilter: (selectedFacetValues) => makeTermsFilter("FitTypeName.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
   facetId: 1,
@@ -74,7 +74,7 @@ const brandFacet = {
       field: "Brand.keyword",
     },
   },
-  makeFilter: (options) => makeTermsFilter("Brand.keyword", options),
+  makeFilter: (selectedFacetValues) => makeTermsFilter("Brand.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
   facetId: 2,
@@ -91,7 +91,7 @@ const colourFacet = {
       field: "Colour.keyword",
     },
   },
-  makeFilter: (options) => makeTermsFilter("Colour.keyword", options),
+  makeFilter: (selectedFacetValues) => makeTermsFilter("Colour.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
   facetId: 3,
@@ -109,7 +109,8 @@ const priceFacet = {
       ranges: priceRangeDataWithoutDisplayNames,
     },
   },
-  makeFilter: (options) => makeRangeFilter(priceRangeDataWithDisplayNames, "Price", options),
+  makeFilter: (selectedFacetValues) =>
+    makeRangeFilter(priceRangeDataWithDisplayNames, "Price", selectedFacetValues),
 
   // old stuff - we should remove it
   facetId: 4,
@@ -118,11 +119,5 @@ const priceFacet = {
   isRange: true,
   ranges: priceRangeDataWithoutDisplayNames,
 };
-
-export const FACET_DEFINITIONS = [fitTypeFacet, brandFacet, colourFacet, priceFacet];
-
-export const FACET_IDS_TO_FIELD_NAMES = Object.fromEntries(
-  FACET_DEFINITIONS.map(({ facetId, fieldName }) => [facetId, fieldName])
-);
 
 export const facetDescriptions = [fitTypeFacet, brandFacet, colourFacet, priceFacet];

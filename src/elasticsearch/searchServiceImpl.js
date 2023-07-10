@@ -27,36 +27,40 @@ const FIELDS_TO_RETURN = [
   "RatingValue",
 ];
 
-const makeFacetFilterDictionaryEntry = (selectedFacets) => (facetDescription) => {
+const makeFacetFilterKvp = (selectedFacets) => (facetDescription) => {
   const name = facetDescription.name;
   const selectedFacet = selectedFacets.find((selectedFacet) => selectedFacet.name === name);
-  const options = selectedFacet?.options ?? [];
-  const filter = options.length ? facetDescription.makeFilter(options) : undefined;
+  const selectedFacetValues = selectedFacet?.selectedFacetValues ?? [];
+  const filter = selectedFacetValues.length
+    ? facetDescription.makeFilter(selectedFacetValues)
+    : undefined;
   return [name, filter];
 };
 
 // Make a dictionary where the keys are facet names (e.g. "fitTypeFacet")
 // and the values are Elasticsearch filter expression objects representing
-// all the currently selected options for that facet. If a particular
-// facet does not have any currently selected options, there won't be an
+// all the currently selected values for that facet. If a particular
+// facet does not have any currently selected values, there won't be an
 // entry for that facet in the dictionary.
 const makeFacetFiltersDictionary = (facetDescriptions, selectedFacets) => {
-  const facetFilterDictionaryEntries = facetDescriptions
-    .map(makeFacetFilterDictionaryEntry(selectedFacets))
+  const facetFiltersKvps = facetDescriptions
+    .map(makeFacetFilterKvp(selectedFacets))
     .filter(([, filter]) => Boolean(filter));
-  return Object.fromEntries(facetFilterDictionaryEntries);
+  return Object.fromEntries(facetFiltersKvps);
 };
 
-const makeSubAggregation = (facetFiltersDictionary) => (facetDescription) => {
+const makeNestedAggregation = (facetFiltersDictionary) => (facetDescription) => {
   const name = facetDescription.name;
 
-  const filtersForOtherFacetSelections = Object.entries(facetFiltersDictionary)
+  const filtersForOtherFacetsKvps = Object.entries(facetFiltersDictionary)
     .filter(([key]) => key !== name)
     .map(([, value]) => value);
 
-  const filter = filtersForOtherFacetSelections.length
-    ? { bool: { filter: filtersForOtherFacetSelections } }
-    : { match_all: {} }; // placeholder match_all filter to maintain consistent query structure
+  const filter = {
+    bool: {
+      filter: filtersForOtherFacetsKvps,
+    },
+  };
 
   const aggregation = {
     filter,
@@ -68,9 +72,11 @@ const makeSubAggregation = (facetFiltersDictionary) => (facetDescription) => {
   return [name, aggregation];
 };
 
-const makeGlobalAggregation = (queryFilters, facetDescriptions, facetFiltersDictionary) => {
-  const aggregationsEntries = facetDescriptions.map(makeSubAggregation(facetFiltersDictionary));
-  const aggregations = Object.fromEntries(aggregationsEntries);
+const makeAggregations = (queryFilters, facetDescriptions, facetFiltersDictionary) => {
+  const nestedAggregationsKvps = facetDescriptions.map(
+    makeNestedAggregation(facetFiltersDictionary)
+  );
+  const nestedAggregations = Object.fromEntries(nestedAggregationsKvps);
 
   return {
     all_documents: {
@@ -82,7 +88,7 @@ const makeGlobalAggregation = (queryFilters, facetDescriptions, facetFiltersDict
               filter: queryFilters,
             },
           },
-          aggregations,
+          aggregations: nestedAggregations,
         },
       },
     },
@@ -90,19 +96,19 @@ const makeGlobalAggregation = (queryFilters, facetDescriptions, facetFiltersDict
 };
 
 const toSelectedFacets = (searchOptionsFilters) => {
-  const options = [];
+  const selectedFacets = [];
   for (const searchOptionsFilter of searchOptionsFilters) {
     const facetDescription = facetDescriptions.find(
       ({ facetId }) => facetId === searchOptionsFilter.facetId
     );
     if (facetDescription) {
-      options.push({
+      selectedFacets.push({
         name: facetDescription.name,
-        options: searchOptionsFilter.keys,
+        selectedFacetValues: searchOptionsFilter.keys,
       });
     }
   }
-  return options;
+  return selectedFacets;
 };
 
 const mapSortBy = (sortBy) => {
@@ -132,15 +138,8 @@ export const searchServiceImpl = async (searchOptions) => {
   }
 
   const selectedFacets = toSelectedFacets(searchOptions.filters);
-
   const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
-
-  const aggregations = makeGlobalAggregation(
-    queryFilters,
-    facetDescriptions,
-    facetFiltersDictionary
-  );
-
+  const aggregations = makeAggregations(queryFilters, facetDescriptions, facetFiltersDictionary);
   const facetFilters = Object.values(facetFiltersDictionary);
 
   const query = {
