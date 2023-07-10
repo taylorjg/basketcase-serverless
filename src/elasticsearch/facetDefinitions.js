@@ -15,7 +15,7 @@ const priceDisplayNameFormatter = (bucket) => {
   return bucket.key;
 };
 
-const priceRangeDataBuckets = [
+const priceRangeDataWithoutDisplayNames = [
   { to: 200, key: "unspecified-200" },
   { from: 200, to: 250, key: "200-250" },
   { from: 250, to: 300, key: "250-300" },
@@ -29,7 +29,7 @@ const priceRangeDataBuckets = [
   { from: 650, key: "650-unspecified" },
 ];
 
-const priceRangeData = priceRangeDataBuckets.map((bucket) => ({
+const priceRangeDataWithDisplayNames = priceRangeDataWithoutDisplayNames.map((bucket) => ({
   ...bucket,
   displayName: priceDisplayNameFormatter(bucket),
 }));
@@ -45,8 +45,8 @@ const fitTypeFacet = {
   },
   makeFilter: (options) => makeTermsFilter("FitTypeName.keyword", options),
 
+  // old stuff - we should remove it
   facetId: 1,
-  aggregationName: "fitType",
   fieldName: "FitTypeName.keyword",
   isRange: false,
 };
@@ -62,8 +62,8 @@ const brandFacet = {
   },
   makeFilter: (options) => makeTermsFilter("Brand.keyword", options),
 
+  // old stuff - we should remove it
   facetId: 2,
-  aggregationName: "brand",
   fieldName: "Brand.keyword",
   isRange: false,
 };
@@ -79,8 +79,8 @@ const colourFacet = {
   },
   makeFilter: (options) => makeTermsFilter("Colour.keyword", options),
 
+  // old stuff - we should remove it
   facetId: 3,
-  aggregationName: "colour",
   fieldName: "Colour.keyword",
   isRange: false,
 };
@@ -92,13 +92,13 @@ const priceFacet = {
   definition: {
     range: {
       field: "Price",
-      ranges: priceRangeData,
+      ranges: priceRangeDataWithoutDisplayNames,
     },
   },
-  makeFilter: (options) => makeRangeFilter(priceRangeData, "Price", options),
+  makeFilter: (options) => makeRangeFilter(priceRangeDataWithDisplayNames, "Price", options),
 
+  // old stuff - we should remove it
   facetId: 4,
-  aggregationName: "price",
   displayNameFormatter: priceDisplayNameFormatter,
   fieldName: "Price",
   isRange: true,
@@ -123,11 +123,4 @@ export const FACET_IDS_TO_FIELD_NAMES = Object.fromEntries(
   FACET_DEFINITIONS.map(({ facetId, fieldName }) => [facetId, fieldName])
 );
 
-export const facetDescriptionsDictionary = {
-  fitTypeFacet,
-  brandFacet,
-  colourFacet,
-  priceFacet,
-};
-
-export const facetDescriptions = Object.values(facetDescriptionsDictionary);
+export const facetDescriptions = [fitTypeFacet, brandFacet, colourFacet, priceFacet];

@@ -5,7 +5,7 @@ import {
   agnosticFiltersToESFilters,
   agnosticSortByToESSort,
 } from "./agnostic2es";
-import { facetDescriptions, facetDescriptionsDictionary } from "./facetDefinitions";
+import { facetDescriptions } from "./facetDefinitions";
 
 const makeFacetFilterDictionaryEntry = (selectedFacets) => (facetDescription) => {
   const name = facetDescription.name;
@@ -119,20 +119,21 @@ export const searchServiceImpl = async (searchOptions) => {
     });
   }
 
-  const selectedFacets = toSelectedFacets(searchOptions.filters);
-  console.log("selectedFacets:", JSON.stringify(selectedFacets, null, 2));
+  // const selectedFacets = toSelectedFacets(searchOptions.filters);
+  // console.log("selectedFacets:", JSON.stringify(selectedFacets, null, 2));
 
-  const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
-  console.log("facetFiltersDictionary:", JSON.stringify(facetFiltersDictionary, null, 2));
+  // const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
+  // console.log("facetFiltersDictionary:", JSON.stringify(facetFiltersDictionary, null, 2));
 
-  const globalAggregation = makeGlobalAggregation(
-    queryFilters,
-    facetDescriptions,
-    facetFiltersDictionary
-  );
-  console.log("globalAggregation:", JSON.stringify(globalAggregation, null, 2));
+  // const globalAggregations = makeGlobalAggregation(
+  //   queryFilters,
+  //   facetDescriptions,
+  //   facetFiltersDictionary
+  // );
+  // console.log("globalAggregation:", JSON.stringify(globalAggregations, null, 2));
 
   const facetFilters = agnosticFiltersToESFilters(searchOptions.filters);
+  // const facetFilters = Object.values(facetFiltersDictionary);
   const esSort = agnosticSortByToESSort(searchOptions.sortBy);
 
   const esRequest = {
@@ -143,6 +144,7 @@ export const searchServiceImpl = async (searchOptions) => {
         match_all: {},
       },
       _source: FIELDS_TO_RETURN,
+      // aggregations: globalAggregations,
     },
   };
 
@@ -167,6 +169,9 @@ export const searchServiceImpl = async (searchOptions) => {
     console.info("esRequest:", JSON.stringify(esRequest, null, 2));
     const esResponse = await esClient.search(esRequest);
     console.info("esResponse:", JSON.stringify(esResponse, null, 2));
+    // TODO: decide what to do re "selected"
+    // Should we maintain this client side ?
+    // Or should the search service impl figure it out when building the response ?
     return esResponseToAgnosticResponse(esResponse, searchOptions.filters);
   } catch (error) {
     if (error.displayName && error.statusCode) {

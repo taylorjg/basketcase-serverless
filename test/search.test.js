@@ -1,7 +1,8 @@
+import "dotenv/config";
 import { describe, expect, it } from "vitest";
 import axios from "axios";
 
-axios.defaults.baseURL = "https://rqnfyvya7e.execute-api.us-east-1.amazonaws.com";
+axios.defaults.baseURL = process.env.SERVERLESS_URL;
 
 const findFacet = (facets, displayName) => {
   return facets.find((facet) => facet.displayName === displayName);

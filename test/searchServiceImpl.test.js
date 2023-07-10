@@ -1,13 +1,14 @@
+import "dotenv/config";
 import { describe, expect, it } from "vitest";
 import { searchServiceImpl } from "../src/elasticsearch/searchServiceImpl";
 
-describe("direct search tests", () => {
-  it.skip("direct", async () => {
+describe("searchServiceImpl tests", () => {
+  it("with some selected facets", async () => {
     const searchOptions = {
       pageSize: 10,
       currentPage: 1,
       sortBy: 0,
-      searchText: "hoover",
+      searchText: "",
       filters: [
         { type: "terms", facetId: 2, keys: ["Beko", "Hotpoint"] },
         { type: "terms", facetId: 3, keys: ["Black"] },
@@ -16,6 +17,6 @@ describe("direct search tests", () => {
     };
     const result = await searchServiceImpl(searchOptions);
     expect(result).toBeDefined();
-    console.log(result);
+    console.dir(result, { depth: null });
   });
 });

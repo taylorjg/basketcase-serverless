@@ -37,10 +37,10 @@ const bucketsToRangeFacetValues = (filter, buckets, displayNameFormatter) =>
     .filter((bucket) => bucket.doc_count)
     .map(bucketToRangeFacetValue(filter, displayNameFormatter));
 
-const esAggsToAgnosticFacets = (aggs, filters = []) => {
+const esAggregationsToAgnosticFacets = (aggregations, filters = []) => {
   return FACET_DEFINITIONS.map((fd) => {
     const filter = filters.find((f) => f.facetId === fd.facetId);
-    const agg = aggs[fd.aggregationName][fd.aggregationName];
+    const aggregation = aggregations[fd.name][fd.name];
     const bucketsToFacetValuesFn = fd.isRange
       ? bucketsToRangeFacetValues
       : bucketsToTermsFacetValues;
@@ -49,7 +49,7 @@ const esAggsToAgnosticFacets = (aggs, filters = []) => {
       facetId: fd.facetId,
       isRange: fd.isRange,
       displayName: fd.displayName,
-      facetValues: bucketsToFacetValuesFn(filter, agg.buckets, fd.displayNameFormatter),
+      facetValues: bucketsToFacetValuesFn(filter, aggregation.buckets, fd.displayNameFormatter),
     };
   });
 };
@@ -61,5 +61,8 @@ const esHitsToAgnosticResults = (hits) => ({
 
 export const esResponseToAgnosticResponse = (response, filters) => ({
   results: esHitsToAgnosticResults(response.hits),
-  facets: esAggsToAgnosticFacets(response.aggregations.all_documents.common_filters, filters),
+  facets: esAggregationsToAgnosticFacets(
+    response.aggregations.all_documents.common_filters,
+    filters
+  ),
 });

@@ -11,15 +11,15 @@ const outRangeFilterFor = (field) => (f) => {
   return true;
 };
 
-const addTermAggregation = (aggs, activeFilters, name, field) => {
+const addTermAggregation = (aggregations, activeFilters, name, field) => {
   const otherActiveFilters = activeFilters.filter(outTermFilterFor(field));
-  aggs[name] = {
+  aggregations[name] = {
     filter: {
       bool: {
         filter: otherActiveFilters,
       },
     },
-    aggs: {
+    aggregations: {
       [name]: {
         terms: {
           field,
@@ -29,15 +29,15 @@ const addTermAggregation = (aggs, activeFilters, name, field) => {
   };
 };
 
-const addRangeAggregation = (aggs, activeFilters, name, field, ranges) => {
+const addRangeAggregation = (aggregations, activeFilters, name, field, ranges) => {
   const otherActiveFilters = activeFilters.filter(outRangeFilterFor(field));
-  aggs[name] = {
+  aggregations[name] = {
     filter: {
       bool: {
         filter: otherActiveFilters,
       },
     },
-    aggs: {
+    aggregations: {
       [name]: {
         range: {
           field,
@@ -49,27 +49,28 @@ const addRangeAggregation = (aggs, activeFilters, name, field, ranges) => {
 };
 
 export const addAggregationsToRequest = (request, filters = [], queryFilters = []) => {
-  request.body.aggs = {
+  request.body.aggregations = {
     all_documents: {
       global: {},
-      aggs: {
+      aggregations: {
         common_filters: {
           filter: {
             bool: {
               filter: queryFilters,
             },
           },
-          aggs: {},
+          aggregations: {},
         },
       },
     },
   };
-  const aggs = request.body.aggs.all_documents.aggs.common_filters.aggs;
+  const aggregations =
+    request.body.aggregations.all_documents.aggregations.common_filters.aggregations;
   FACET_DEFINITIONS.forEach((fd) => {
     if (fd.isRange) {
-      addRangeAggregation(aggs, filters, fd.aggregationName, fd.fieldName, fd.ranges);
+      addRangeAggregation(aggregations, filters, fd.name, fd.fieldName, fd.ranges);
     } else {
-      addTermAggregation(aggs, filters, fd.aggregationName, fd.fieldName);
+      addTermAggregation(aggregations, filters, fd.name, fd.fieldName);
     }
   });
   return request;
