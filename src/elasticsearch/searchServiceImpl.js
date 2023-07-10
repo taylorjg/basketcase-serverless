@@ -1,11 +1,31 @@
 import * as ES from "elasticsearch";
 import { esResponseToAgnosticResponse } from "./es2agnostic";
-import {
-  addAggregationsToRequest,
-  agnosticFiltersToESFilters,
-  agnosticSortByToESSort,
-} from "./agnostic2es";
+import { addAggregationsToRequest, agnosticFiltersToESFilters } from "./agnostic2es";
 import { facetDescriptions } from "./facetDefinitions";
+import * as C from "../constants";
+
+const esConfig = {
+  host: process.env.BONSAI_URL ?? "localhost:9200",
+};
+
+const esClient = new ES.Client(esConfig);
+
+const INDEX_NAME = "products";
+
+const TYPE_NAME = "washers";
+
+const FIELDS_TO_RETURN = [
+  "Code",
+  "FitTypeName",
+  "Brand",
+  "Colour",
+  "Price",
+  "FullTitle",
+  "EnergyRating",
+  "Image",
+  "ReviewCount",
+  "RatingValue",
+];
 
 const makeFacetFilterDictionaryEntry = (selectedFacets) => (facetDescription) => {
   const name = facetDescription.name;
@@ -85,28 +105,20 @@ const toSelectedFacets = (searchOptionsFilters) => {
   return options;
 };
 
-const esConfig = {
-  host: process.env.BONSAI_URL ?? "localhost:9200",
+const mapSortBy = (sortBy) => {
+  switch (sortBy) {
+    case C.SORT_BY_PRICE_LOW_TO_HIGH:
+      return { Price: { order: "asc" } };
+    case C.SORT_BY_PRICE_HIGH_TO_LOW:
+      return { Price: { order: "desc" } };
+    case C.SORT_BY_AVERAGE_RATING:
+      return { RatingValue: { order: "desc" } };
+    case C.SORT_BY_REVIEW_COUNT:
+      return { ReviewCount: { order: "desc" } };
+    default:
+      mapSortBy(C.DEFAULT_SORT_BY);
+  }
 };
-
-const esClient = new ES.Client(esConfig);
-
-const INDEX_NAME = "products";
-
-const TYPE_NAME = "washers";
-
-const FIELDS_TO_RETURN = [
-  "Code",
-  "FitTypeName",
-  "Brand",
-  "Colour",
-  "Price",
-  "FullTitle",
-  "EnergyRating",
-  "Image",
-  "ReviewCount",
-  "RatingValue",
-];
 
 export const searchServiceImpl = async (searchOptions) => {
   const queryFilters = [];
@@ -134,7 +146,6 @@ export const searchServiceImpl = async (searchOptions) => {
 
   const facetFilters = agnosticFiltersToESFilters(searchOptions.filters);
   // const facetFilters = Object.values(facetFiltersDictionary);
-  const esSort = agnosticSortByToESSort(searchOptions.sortBy);
 
   const esRequest = {
     index: INDEX_NAME,
@@ -143,6 +154,7 @@ export const searchServiceImpl = async (searchOptions) => {
       query: {
         match_all: {},
       },
+      sort: mapSortBy(searchOptions.sortBy),
       _source: FIELDS_TO_RETURN,
       // aggregations: globalAggregations,
     },
@@ -152,8 +164,6 @@ export const searchServiceImpl = async (searchOptions) => {
     esRequest.body.size = searchOptions.pageSize;
     esRequest.body.from = searchOptions.pageSize * (searchOptions.currentPage - 1);
   }
-
-  esRequest.body.sort = esSort;
 
   if (facetFilters.length || queryFilters.length) {
     esRequest.body.query = {

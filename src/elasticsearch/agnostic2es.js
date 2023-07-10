@@ -1,5 +1,4 @@
 import { FACET_DEFINITIONS, FACET_IDS_TO_FIELD_NAMES } from "./facetDefinitions";
-import * as C from "../constants";
 
 const outTermFilterFor = (field) => (f) => {
   if (f.terms && f.terms[field]) return false;
@@ -114,18 +113,3 @@ const agnosticFilterToESFilter = (filter) => {
 
 export const agnosticFiltersToESFilters = (filters) =>
   filters.map(agnosticFilterToESFilter).filter(Boolean);
-
-export const agnosticSortByToESSort = (sortBy) => {
-  switch (sortBy) {
-    case C.SORT_BY_PRICE_LOW_TO_HIGH:
-      return { Price: { order: "asc" } };
-    case C.SORT_BY_PRICE_HIGH_TO_LOW:
-      return { Price: { order: "desc" } };
-    case C.SORT_BY_AVERAGE_RATING:
-      return { RatingValue: { order: "desc" } };
-    case C.SORT_BY_REVIEW_COUNT:
-      return { ReviewCount: { order: "desc" } };
-    default:
-      agnosticSortByToESSort(C.DEFAULT_SORT_BY);
-  }
-};
