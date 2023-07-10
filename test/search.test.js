@@ -1,5 +1,4 @@
 import "dotenv/config";
-import { describe, expect, it } from "vitest";
 import axios from "axios";
 
 axios.defaults.baseURL = process.env.SERVERLESS_URL;
