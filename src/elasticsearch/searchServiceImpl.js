@@ -173,7 +173,7 @@ export const searchServiceImpl = async (searchOptions) => {
     console.info("esRequest:", JSON.stringify(esRequest, null, 2));
     const esResponse = await esClient.search(esRequest);
     console.info("esResponse:", JSON.stringify(esResponse, null, 2));
-    return esResponseToAgnosticResponse(esResponse, searchOptions.filters);
+    return esResponseToAgnosticResponse(esResponse, selectedFacets);
   } catch (error) {
     if (error.displayName && error.statusCode) {
       console.error(

@@ -2,10 +2,11 @@ import { facetDescriptions } from "./facetDefinitions";
 
 const defaultDisplayNameFormatter = (bucket) => bucket.key;
 
-const filterContainsKey = (filter, key) => (filter?.keys ?? []).some((k) => k === key);
+const isFacetValueSelected = (selectedFacet, key) =>
+  (selectedFacet?.selectedFacetValues ?? []).some((k) => k === key);
 
 const bucketToCommonFacetValue = (
-  filter,
+  selectedFacet,
   bucket,
   index,
   displayNameFormatter = defaultDisplayNameFormatter
@@ -14,14 +15,14 @@ const bucketToCommonFacetValue = (
   displayName: displayNameFormatter(bucket),
   key: bucket.key,
   count: bucket.doc_count,
-  selected: filterContainsKey(filter, bucket.key),
+  selected: isFacetValueSelected(selectedFacet, bucket.key),
 });
 
-const bucketToTermsFacetValue = (filter, displayNameFormatter) => (bucket, index) =>
-  bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter);
+const bucketToTermsFacetValue = (selectedFacet, displayNameFormatter) => (bucket, index) =>
+  bucketToCommonFacetValue(selectedFacet, bucket, index, displayNameFormatter);
 
-const bucketToRangeFacetValue = (filter, displayNameFormatter) => (bucket, index) => {
-  const facetValue = bucketToCommonFacetValue(filter, bucket, index, displayNameFormatter);
+const bucketToRangeFacetValue = (selectedFacet, displayNameFormatter) => (bucket, index) => {
+  const facetValue = bucketToCommonFacetValue(selectedFacet, bucket, index, displayNameFormatter);
   return {
     ...facetValue,
     from: bucket.from,
@@ -37,18 +38,23 @@ const bucketsToRangeFacetValues = (filter, buckets, displayNameFormatter) =>
     .filter((bucket) => bucket.doc_count)
     .map(bucketToRangeFacetValue(filter, displayNameFormatter));
 
-const esAggregationsToAgnosticFacets = (aggregations, filters = []) => {
+const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
   return facetDescriptions.map((fd) => {
-    const filter = filters.find((f) => f.facetId === fd.facetId);
+    const selectedFacet = selectedFacets.find(({ name }) => name === fd.name);
     const aggregation = aggregations[fd.name][fd.name];
     const bucketsToFacetValuesFn = fd.isRange
       ? bucketsToRangeFacetValues
       : bucketsToTermsFacetValues;
+
     return {
       name: fd.name,
       displayName: fd.displayName,
       type: fd.type,
-      facetValues: bucketsToFacetValuesFn(filter, aggregation.buckets, fd.displayNameFormatter),
+      facetValues: bucketsToFacetValuesFn(
+        selectedFacet,
+        aggregation.buckets,
+        fd.displayNameFormatter
+      ),
       isRange: fd.isRange,
       facetId: fd.facetId,
     };
@@ -60,10 +66,10 @@ const esHitsToAgnosticResults = (hits) => ({
   products: hits.hits.map((hit) => hit._source),
 });
 
-export const esResponseToAgnosticResponse = (response, filters) => ({
+export const esResponseToAgnosticResponse = (response, selectedFacets) => ({
   results: esHitsToAgnosticResults(response.hits),
   facets: esAggregationsToAgnosticFacets(
     response.aggregations.all_documents.common_filters,
-    filters
+    selectedFacets
   ),
 });
