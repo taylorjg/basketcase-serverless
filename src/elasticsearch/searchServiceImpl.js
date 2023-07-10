@@ -1,6 +1,6 @@
 import * as ES from "elasticsearch";
+
 import { esResponseToAgnosticResponse } from "./es2agnostic";
-import { addAggregationsToRequest, agnosticFiltersToESFilters } from "./agnostic2es";
 import { facetDescriptions } from "./facetDefinitions";
 import * as C from "../constants";
 
@@ -131,39 +131,36 @@ export const searchServiceImpl = async (searchOptions) => {
     });
   }
 
-  // const selectedFacets = toSelectedFacets(searchOptions.filters);
-  // console.log("selectedFacets:", JSON.stringify(selectedFacets, null, 2));
+  const selectedFacets = toSelectedFacets(searchOptions.filters);
 
-  // const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
-  // console.log("facetFiltersDictionary:", JSON.stringify(facetFiltersDictionary, null, 2));
+  const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
 
-  // const globalAggregations = makeGlobalAggregation(
-  //   queryFilters,
-  //   facetDescriptions,
-  //   facetFiltersDictionary
-  // );
-  // console.log("globalAggregation:", JSON.stringify(globalAggregations, null, 2));
+  const aggregations = makeGlobalAggregation(
+    queryFilters,
+    facetDescriptions,
+    facetFiltersDictionary
+  );
 
-  const facetFilters = agnosticFiltersToESFilters(searchOptions.filters);
-  // const facetFilters = Object.values(facetFiltersDictionary);
+  const facetFilters = Object.values(facetFiltersDictionary);
+
+  const query = {
+    bool: {
+      filter: [...queryFilters, ...facetFilters],
+    },
+  };
 
   const esRequest = {
     index: INDEX_NAME,
     type: TYPE_NAME,
     body: {
-      query: {
-        match_all: {},
-      },
+      query,
+      size: searchOptions.pageSize,
+      from: searchOptions.pageSize * (searchOptions.currentPage - 1),
       sort: mapSortBy(searchOptions.sortBy),
       _source: FIELDS_TO_RETURN,
-      // aggregations: globalAggregations,
+      aggregations,
     },
   };
-
-  if (searchOptions.pageSize && searchOptions.currentPage) {
-    esRequest.body.size = searchOptions.pageSize;
-    esRequest.body.from = searchOptions.pageSize * (searchOptions.currentPage - 1);
-  }
 
   if (facetFilters.length || queryFilters.length) {
     esRequest.body.query = {
@@ -173,15 +170,10 @@ export const searchServiceImpl = async (searchOptions) => {
     };
   }
 
-  addAggregationsToRequest(esRequest, facetFilters, queryFilters);
-
   try {
     console.info("esRequest:", JSON.stringify(esRequest, null, 2));
     const esResponse = await esClient.search(esRequest);
     console.info("esResponse:", JSON.stringify(esResponse, null, 2));
-    // TODO: decide what to do re "selected"
-    // Should we maintain this client side ?
-    // Or should the search service impl figure it out when building the response ?
     return esResponseToAgnosticResponse(esResponse, searchOptions.filters);
   } catch (error) {
     if (error.displayName && error.statusCode) {
