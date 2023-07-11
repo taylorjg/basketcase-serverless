@@ -1,5 +1,19 @@
 import { makeTermsFilter, makeRangeFilter } from "./facetDefinitionsUtils";
 
+const makeRangeDatum = ({ from, to }) => {
+  const maybeFrom = from !== undefined ? { from } : undefined;
+  const maybeTo = to !== undefined ? { to } : undefined;
+  const fromKeyPart = maybeFrom ? from : "undefined";
+  const toKeyPart = maybeTo ? to : "undefined";
+  const key = `${fromKeyPart}-${toKeyPart}`;
+
+  return {
+    ...maybeFrom,
+    ...maybeTo,
+    key,
+  };
+};
+
 const priceDisplayNameFormatter = (bucket) => {
   const gotFrom = Number.isInteger(bucket.from);
   const gotTo = Number.isInteger(bucket.to);
@@ -15,21 +29,7 @@ const priceDisplayNameFormatter = (bucket) => {
   return bucket.key;
 };
 
-const makeRangeDatum = ({ from, to }) => {
-  const maybeFrom = from !== undefined ? { from } : undefined;
-  const maybeTo = to !== undefined ? { to } : undefined;
-  const fromKeyPart = maybeFrom ? from : "undefined";
-  const toKeyPart = maybeTo ? to : "undefined";
-  const key = `${fromKeyPart}-${toKeyPart}`;
-
-  return {
-    ...maybeFrom,
-    ...maybeTo,
-    key,
-  };
-};
-
-const priceRangeDataWithoutDisplayNames = [
+const priceRangesWithoutDisplayNames = [
   makeRangeDatum({ to: 200 }),
   makeRangeDatum({ from: 200, to: 250 }),
   makeRangeDatum({ from: 250, to: 300 }),
@@ -43,7 +43,7 @@ const priceRangeDataWithoutDisplayNames = [
   makeRangeDatum({ from: 650 }),
 ];
 
-const priceRangeDataWithDisplayNames = priceRangeDataWithoutDisplayNames.map((bucket) => ({
+const priceRangesWithDisplayNames = priceRangesWithoutDisplayNames.map((bucket) => ({
   ...bucket,
   displayName: priceDisplayNameFormatter(bucket),
 }));
@@ -61,7 +61,6 @@ const fitTypeFacet = {
 
   // old stuff - we should remove it
   facetId: 1,
-  fieldName: "FitTypeName.keyword",
   isRange: false,
 };
 
@@ -78,7 +77,6 @@ const brandFacet = {
 
   // old stuff - we should remove it
   facetId: 2,
-  fieldName: "Brand.keyword",
   isRange: false,
 };
 
@@ -95,7 +93,6 @@ const colourFacet = {
 
   // old stuff - we should remove it
   facetId: 3,
-  fieldName: "Colour.keyword",
   isRange: false,
 };
 
@@ -106,18 +103,15 @@ const priceFacet = {
   definition: {
     range: {
       field: "Price",
-      ranges: priceRangeDataWithoutDisplayNames,
+      ranges: priceRangesWithoutDisplayNames,
     },
   },
   makeFilter: (selectedFacetValues) =>
-    makeRangeFilter(priceRangeDataWithDisplayNames, "Price", selectedFacetValues),
+    makeRangeFilter(priceRangesWithDisplayNames, "Price", selectedFacetValues),
 
   // old stuff - we should remove it
   facetId: 4,
-  displayNameFormatter: priceDisplayNameFormatter,
-  fieldName: "Price",
   isRange: true,
-  ranges: priceRangeDataWithoutDisplayNames,
 };
 
 export const facetDescriptions = [fitTypeFacet, brandFacet, colourFacet, priceFacet];
