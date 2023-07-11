@@ -14,7 +14,7 @@ const makeRangeDatum = ({ from, to }) => {
   };
 };
 
-const priceDisplayNameFormatter = (bucket) => {
+const priceRangeDisplayNameFormatter = (bucket) => {
   const gotFrom = Number.isInteger(bucket.from);
   const gotTo = Number.isInteger(bucket.to);
   if (gotFrom && gotTo) {
@@ -29,7 +29,7 @@ const priceDisplayNameFormatter = (bucket) => {
   return bucket.key;
 };
 
-const priceRangesWithoutDisplayNames = [
+const priceRanges = [
   makeRangeDatum({ to: 200 }),
   makeRangeDatum({ from: 200, to: 250 }),
   makeRangeDatum({ from: 250, to: 300 }),
@@ -42,11 +42,6 @@ const priceRangesWithoutDisplayNames = [
   makeRangeDatum({ from: 600, to: 650 }),
   makeRangeDatum({ from: 650 }),
 ];
-
-const priceRangesWithDisplayNames = priceRangesWithoutDisplayNames.map((bucket) => ({
-  ...bucket,
-  displayName: priceDisplayNameFormatter(bucket),
-}));
 
 const fitTypeFacet = {
   name: "fitType",
@@ -103,11 +98,11 @@ const priceFacet = {
   definition: {
     range: {
       field: "Price",
-      ranges: priceRangesWithoutDisplayNames,
+      ranges: priceRanges,
     },
   },
-  makeFilter: (selectedFacetValues) =>
-    makeRangeFilter(priceRangesWithDisplayNames, "Price", selectedFacetValues),
+  makeFilter: (selectedFacetValues) => makeRangeFilter(priceRanges, "Price", selectedFacetValues),
+  displayNameFormatter: priceRangeDisplayNameFormatter,
 
   // old stuff - we should remove it
   facetId: 4,
