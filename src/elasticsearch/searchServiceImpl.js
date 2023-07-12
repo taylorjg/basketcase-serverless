@@ -95,21 +95,11 @@ const makeAggregations = (queryFilters, facetDescriptions, facetFiltersDictionar
   };
 };
 
-const toSelectedFacets = (searchOptionsFilters) => {
-  const selectedFacets = [];
-  for (const searchOptionsFilter of searchOptionsFilters) {
-    const facetDescription = facetDescriptions.find(
-      ({ facetId }) => facetId === searchOptionsFilter.facetId
-    );
-    if (facetDescription) {
-      selectedFacets.push({
-        name: facetDescription.name,
-        selectedFacetValues: searchOptionsFilter.keys,
-      });
-    }
-  }
-  return selectedFacets;
-};
+const toSelectedFacets = (searchOptionsFilters) =>
+  searchOptionsFilters.map((searchOptionsFilter) => ({
+    name: searchOptionsFilter.name,
+    selectedFacetValues: searchOptionsFilter.keys,
+  }));
 
 const mapSortBy = (sortBy) => {
   switch (sortBy) {

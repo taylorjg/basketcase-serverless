@@ -55,7 +55,6 @@ const fitTypeFacet = {
   makeFilter: (selectedFacetValues) => makeTermsFilter("FitTypeName.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
-  facetId: 1,
   isRange: false,
 };
 
@@ -71,7 +70,6 @@ const brandFacet = {
   makeFilter: (selectedFacetValues) => makeTermsFilter("Brand.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
-  facetId: 2,
   isRange: false,
 };
 
@@ -87,7 +85,6 @@ const colourFacet = {
   makeFilter: (selectedFacetValues) => makeTermsFilter("Colour.keyword", selectedFacetValues),
 
   // old stuff - we should remove it
-  facetId: 3,
   isRange: false,
 };
 
@@ -105,7 +102,6 @@ const priceFacet = {
   displayNameFormatter: priceRangeDisplayNameFormatter,
 
   // old stuff - we should remove it
-  facetId: 4,
   isRange: true,
 };
 

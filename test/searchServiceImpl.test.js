@@ -9,9 +9,9 @@ describe("searchServiceImpl tests", () => {
       sortBy: 0,
       searchText: "",
       filters: [
-        { type: "terms", facetId: 2, keys: ["Beko", "Hotpoint"] },
-        { type: "terms", facetId: 3, keys: ["Black"] },
-        { type: "range", facetId: 4, keys: ["250-300"], from: 250, to: 300 },
+        { name: "brand", keys: ["Beko", "Hotpoint"] },
+        { name: "colour", keys: ["Black"] },
+        { name: "price", keys: ["250-300"] },
       ],
     };
     const result = await searchServiceImpl(searchOptions);
