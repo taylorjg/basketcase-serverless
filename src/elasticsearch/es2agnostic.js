@@ -13,10 +13,7 @@ const bucketToFacetValue = (selectedFacet, displayNameFormatter) => (bucket) => 
   };
 };
 
-const bucketsToTermsFacetValues = (selectedFacet, displayNameFormatter, buckets) =>
-  buckets.map(bucketToFacetValue(selectedFacet, displayNameFormatter));
-
-const bucketsToRangeFacetValues = (selectedFacet, displayNameFormatter, buckets) =>
+const bucketsToFacetValues = (selectedFacet, displayNameFormatter, buckets) =>
   buckets
     .filter((bucket) => bucket.doc_count > 0)
     .map(bucketToFacetValue(selectedFacet, displayNameFormatter));
@@ -25,15 +22,12 @@ const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
   return facetDescriptions.map((fd) => {
     const selectedFacet = selectedFacets.find(({ name }) => name === fd.name);
     const aggregation = aggregations[fd.name][fd.name];
-    const bucketsToFacetValuesFn = fd.isRange
-      ? bucketsToRangeFacetValues
-      : bucketsToTermsFacetValues;
 
     return {
       name: fd.name,
       displayName: fd.displayName,
       type: fd.type,
-      facetValues: bucketsToFacetValuesFn(
+      facetValues: bucketsToFacetValues(
         selectedFacet,
         fd.displayNameFormatter,
         aggregation.buckets
