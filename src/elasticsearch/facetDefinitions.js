@@ -52,7 +52,7 @@ const fitTypeFacet = {
       field: "FitTypeName.keyword",
     },
   },
-  makeFilter: (selectedFacetValues) => makeTermsFilter("FitTypeName.keyword", selectedFacetValues),
+  makeFilter: makeTermsFilter("FitTypeName.keyword"),
 };
 
 const brandFacet = {
@@ -64,7 +64,7 @@ const brandFacet = {
       field: "Brand.keyword",
     },
   },
-  makeFilter: (selectedFacetValues) => makeTermsFilter("Brand.keyword", selectedFacetValues),
+  makeFilter: makeTermsFilter("Brand.keyword"),
 };
 
 const colourFacet = {
@@ -76,7 +76,7 @@ const colourFacet = {
       field: "Colour.keyword",
     },
   },
-  makeFilter: (selectedFacetValues) => makeTermsFilter("Colour.keyword", selectedFacetValues),
+  makeFilter: makeTermsFilter("Colour.keyword"),
 };
 
 const priceFacet = {
@@ -89,7 +89,7 @@ const priceFacet = {
       ranges: priceRanges,
     },
   },
-  makeFilter: (selectedFacetValues) => makeRangeFilter(priceRanges, "Price", selectedFacetValues),
+  makeFilter: makeRangeFilter("Price", priceRanges),
   displayNameFormatter: priceRangeDisplayNameFormatter,
 };
 

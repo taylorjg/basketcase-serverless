@@ -1,10 +1,10 @@
-export const makeTermsFilter = (field, selectedFacetValues) => ({
+export const makeTermsFilter = (field) => (selectedFacetValues) => ({
   terms: {
     [field]: selectedFacetValues,
   },
 });
 
-export const makeRangeFilter = (ranges, field, selectedFacetValues) => {
+export const makeRangeFilter = (field, ranges) => (selectedFacetValues) => {
   const selectedRanges = ranges.filter((range) => selectedFacetValues.includes(range.key));
 
   if (selectedRanges.length === 0) {
