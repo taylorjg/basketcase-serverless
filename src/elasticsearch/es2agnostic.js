@@ -37,7 +37,7 @@ const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
 };
 
 const esHitsToAgnosticResults = (hits) => ({
-  total: hits.total,
+  total: hits.total.value,
   products: hits.hits.map((hit) => hit._source),
 });
 

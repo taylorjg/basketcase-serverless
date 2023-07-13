@@ -10,7 +10,7 @@ describe("search tests", () => {
     const response = await axios.post("/api/search");
     const { results, facets } = response.data;
 
-    expect(results.total.value).toBe(60);
+    expect(results.total).toBe(60);
     expect(results.products).toHaveLength(10);
 
     expect(facets).toHaveLength(4);
@@ -30,7 +30,7 @@ describe("search tests", () => {
     const response = await axios.post("/api/search", { searchText: "candy" });
     const { results, facets } = response.data;
 
-    expect(results.total.value).toBe(4);
+    expect(results.total).toBe(4);
     expect(results.products).toHaveLength(4);
 
     expect(facets).toHaveLength(4);
