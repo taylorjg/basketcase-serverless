@@ -2,7 +2,7 @@ import * as ES from "elasticsearch";
 
 import { esResponseToAgnosticResponse } from "./es2agnostic";
 import { facetDescriptions } from "./facetDefinitions";
-import * as C from "../constants";
+import * as C from "./constants";
 
 const esConfig = {
   host: process.env.BONSAI_URL ?? "localhost:9200",

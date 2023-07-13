@@ -1,5 +1,6 @@
 import "dotenv/config";
-import { searchServiceImpl } from "../src/elasticsearch/searchServiceImpl";
+
+import { searchServiceImpl } from "../src/searchServiceImpl";
 
 describe("searchServiceImpl tests", () => {
   it("with some selected facets", async () => {

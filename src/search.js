@@ -1,6 +1,6 @@
-import { searchServiceImpl } from "./elasticsearch/searchServiceImpl";
+import { searchServiceImpl } from "./searchServiceImpl";
+import { wrapHandlerImplementation } from "./serverlessUtils";
 import * as C from "./constants";
-import * as U from "./utils";
 
 const makeSearchOptions = (eventBody) => {
   if (!eventBody) return C.DEFAULT_SEARCH_OPTIONS;
@@ -22,7 +22,7 @@ const makeSearchOptions = (eventBody) => {
 };
 
 export async function handler(event) {
-  return U.wrapHandlerImplementation("/api/search", async () => {
+  return wrapHandlerImplementation("/api/search", async () => {
     const searchOptions = makeSearchOptions(event.body);
     console.info("searchOptions:", searchOptions);
     return searchServiceImpl(searchOptions);
