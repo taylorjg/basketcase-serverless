@@ -32,7 +32,6 @@ const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
         fd.displayNameFormatter,
         aggregation.buckets
       ),
-      isRange: fd.isRange,
     };
   });
 };
