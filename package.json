@@ -9,6 +9,7 @@
     "deploy": "serverless deploy",
     "info": "serverless info",
     "invoke": "serverless invoke -f search",
+    "invoke:jq": "serverless invoke -f search | jq '.body | fromjson'",
     "invoke:local": "serverless invoke local -f search"
   },
   "author": "Jonathan Taylor",
