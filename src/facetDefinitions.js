@@ -1,11 +1,18 @@
 import { makeTermsFilter, makeRangeFilter } from "./facetDefinitionsUtils";
 
+const makeRangeKey = (from, to) => {
+  const gotFrom = Number.isInteger(from);
+  const gotTo = Number.isInteger(to);
+  if (gotFrom && gotTo) return `${from}-${to}`;
+  if (gotFrom) return `${from}-or-more`;
+  if (gotTo) return `${to}-or-less`;
+  return `${from}-${to}`;
+};
+
 const makeRangeDatum = ({ from, to }) => {
   const maybeFrom = from !== undefined ? { from } : undefined;
   const maybeTo = to !== undefined ? { to } : undefined;
-  const fromKeyPart = maybeFrom ? from : "undefined";
-  const toKeyPart = maybeTo ? to : "undefined";
-  const key = `${fromKeyPart}-${toKeyPart}`;
+  const key = makeRangeKey(from, to);
 
   return {
     ...maybeFrom,
