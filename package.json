@@ -1,6 +1,6 @@
 {
   "name": "basketcase-serverless",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "TODO",
   "main": "index.js",
   "scripts": {
