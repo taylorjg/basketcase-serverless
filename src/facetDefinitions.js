@@ -106,6 +106,7 @@ const priceFacet = {
   name: "price",
   displayName: "Price",
   type: "single",
+  noAltKeys: true,
   definition: {
     range: {
       field: "Price",

@@ -96,10 +96,18 @@ const makeAggregations = (queryFilters, facetDescriptions, facetFiltersDictionar
 };
 
 const toSelectedFacets = (searchOptionsFilters) =>
-  searchOptionsFilters.map((searchOptionsFilter) => ({
-    name: searchOptionsFilter.name,
-    selectedFacetValues: searchOptionsFilter.keys.map(altKeyToKey),
-  }));
+  searchOptionsFilters.map((searchOptionsFilter) => {
+    const facetDescription = facetDescriptions.find(
+      ({ name }) => name === searchOptionsFilter.name
+    );
+    const selectedFacetValues = facetDescription?.noAltKeys
+      ? searchOptionsFilter.keys
+      : searchOptionsFilter.keys.map(altKeyToKey);
+    return {
+      name: searchOptionsFilter.name,
+      selectedFacetValues,
+    };
+  });
 
 const mapSortBy = (sortBy) => {
   switch (sortBy) {

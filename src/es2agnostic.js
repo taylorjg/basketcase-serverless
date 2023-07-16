@@ -3,36 +3,36 @@ import { facetDescriptions, keyToAltKey } from "./facetDefinitions";
 const isFacetValueSelected = (selectedFacet, key) =>
   (selectedFacet?.selectedFacetValues ?? []).some((k) => k === key);
 
-const bucketToFacetValue = (selectedFacet, displayNameFormatter) => (bucket) => {
-  const displayName = displayNameFormatter ? displayNameFormatter(bucket) : bucket.key;
+const bucketToFacetValue = (selectedFacet, facetDescription) => (bucket) => {
+  const { displayNameFormatter, noAltKeys } = facetDescription;
+  const { key } = bucket;
+  const displayName = displayNameFormatter ? displayNameFormatter(bucket) : key;
+  const altKey = noAltKeys ? key : keyToAltKey(key);
+
   return {
     displayName,
-    key: bucket.key,
-    altKey: keyToAltKey(bucket.key),
+    key,
+    altKey,
     count: bucket.doc_count,
-    selected: isFacetValueSelected(selectedFacet, bucket.key),
+    selected: isFacetValueSelected(selectedFacet, key),
   };
 };
 
-const bucketsToFacetValues = (selectedFacet, displayNameFormatter, buckets) =>
+const bucketsToFacetValues = (selectedFacet, facetDescription, buckets) =>
   buckets
     .filter((bucket) => bucket.doc_count > 0)
-    .map(bucketToFacetValue(selectedFacet, displayNameFormatter));
+    .map(bucketToFacetValue(selectedFacet, facetDescription));
 
 const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
-  return facetDescriptions.map((fd) => {
-    const selectedFacet = selectedFacets.find(({ name }) => name === fd.name);
-    const aggregation = aggregations[fd.name][fd.name];
+  return facetDescriptions.map((facetDescription) => {
+    const selectedFacet = selectedFacets.find(({ name }) => name === facetDescription.name);
+    const aggregation = aggregations[facetDescription.name][facetDescription.name];
 
     return {
-      name: fd.name,
-      displayName: fd.displayName,
-      type: fd.type,
-      facetValues: bucketsToFacetValues(
-        selectedFacet,
-        fd.displayNameFormatter,
-        aggregation.buckets
-      ),
+      name: facetDescription.name,
+      displayName: facetDescription.displayName,
+      type: facetDescription.type,
+      facetValues: bucketsToFacetValues(selectedFacet, facetDescription, aggregation.buckets),
     };
   });
 };
