@@ -1,7 +1,7 @@
 import * as ES from "elasticsearch";
 
 import { esResponseToAgnosticResponse } from "./es2agnostic";
-import { facetDescriptions } from "./facetDefinitions";
+import { facetDescriptions, altKeyToKey } from "./facetDefinitions";
 import * as C from "./constants";
 
 const esConfig = {
@@ -98,7 +98,7 @@ const makeAggregations = (queryFilters, facetDescriptions, facetFiltersDictionar
 const toSelectedFacets = (searchOptionsFilters) =>
   searchOptionsFilters.map((searchOptionsFilter) => ({
     name: searchOptionsFilter.name,
-    selectedFacetValues: searchOptionsFilter.keys,
+    selectedFacetValues: searchOptionsFilter.keys.map(altKeyToKey),
   }));
 
 const mapSortBy = (sortBy) => {

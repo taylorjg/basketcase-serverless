@@ -1,4 +1,4 @@
-import { facetDescriptions } from "./facetDefinitions";
+import { facetDescriptions, keyToAltKey } from "./facetDefinitions";
 
 const isFacetValueSelected = (selectedFacet, key) =>
   (selectedFacet?.selectedFacetValues ?? []).some((k) => k === key);
@@ -8,6 +8,7 @@ const bucketToFacetValue = (selectedFacet, displayNameFormatter) => (bucket) => 
   return {
     displayName,
     key: bucket.key,
+    altKey: keyToAltKey(bucket.key),
     count: bucket.doc_count,
     selected: isFacetValueSelected(selectedFacet, bucket.key),
   };

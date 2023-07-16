@@ -1,5 +1,21 @@
 import { makeTermsFilter, makeRangeFilter } from "./facetDefinitionsUtils";
 
+export const keyToAltKey = (key) => {
+  const altKey = key.toLowerCase().replaceAll(" ", "-");
+  // Only use 'altKey' if we can successfully convert it back to 'key' otherwise just return `key' unaltered.
+  return altKeyToKey(altKey) === key ? altKey : key;
+};
+
+const capitalise = (s) => {
+  const [firstChar, ...remainingChars] = Array.from(s);
+  return [firstChar.toUpperCase(), ...remainingChars].join("");
+};
+
+export const altKeyToKey = (altKey) => {
+  const words = altKey.split("-");
+  return words.map(capitalise).join(" ");
+};
+
 const makeRangeKey = (from, to) => {
   const gotFrom = Number.isInteger(from);
   const gotTo = Number.isInteger(to);
