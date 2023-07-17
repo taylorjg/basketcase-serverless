@@ -9,7 +9,7 @@ describe("searchServiceImpl tests", () => {
     const searchOptions = {
       pageSize: 10,
       currentPage: 1,
-      sortBy: 0,
+      sortBy: "price-low-to-high",
       searchText: "",
       filters: [
         { name: "brand", keys: ["samsung"] },

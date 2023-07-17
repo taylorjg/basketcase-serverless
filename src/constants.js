@@ -1,7 +1,7 @@
-export const SORT_BY_PRICE_LOW_TO_HIGH = 0;
-export const SORT_BY_PRICE_HIGH_TO_LOW = 1;
-export const SORT_BY_AVERAGE_RATING = 2;
-export const SORT_BY_REVIEW_COUNT = 3;
+export const SORT_BY_PRICE_LOW_TO_HIGH = "price-low-to-high";
+export const SORT_BY_PRICE_HIGH_TO_LOW = "price-high-to-low";
+export const SORT_BY_AVERAGE_RATING = "average-rating";
+export const SORT_BY_REVIEW_COUNT = "review-count";
 
 export const DEFAULT_PAGE_SIZE = 10;
 export const DEFAULT_CURRENT_PAGE = 1;
