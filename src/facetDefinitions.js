@@ -41,13 +41,13 @@ const priceRangeDisplayNameFormatter = (bucket) => {
   const gotFrom = Number.isInteger(bucket.from);
   const gotTo = Number.isInteger(bucket.to);
   if (gotFrom && gotTo) {
-    return `&pound;${bucket.from} - &pound;${bucket.to}`;
+    return `£${bucket.from} - £${bucket.to}`;
   }
   if (gotFrom) {
-    return `&pound;${bucket.from} or more`;
+    return `£${bucket.from} or more`;
   }
   if (gotTo) {
-    return `&pound;${bucket.to} or less`;
+    return `£${bucket.to} or less`;
   }
   return bucket.key;
 };
