@@ -37,7 +37,7 @@ const makeFacetFilterKvp = (selectedFacets) => (facetDescription) => {
   return [name, filter];
 };
 
-// Make a dictionary where the keys are facet names (e.g. "fitTypeFacet")
+// Make a dictionary where the keys are facet names (e.g. "fit-type")
 // and the values are Elasticsearch filter expression objects representing
 // all the currently selected values for that facet. If a particular
 // facet does not have any currently selected values, there won't be an

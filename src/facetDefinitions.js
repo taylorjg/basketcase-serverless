@@ -67,7 +67,7 @@ const priceRanges = [
 ];
 
 const fitTypeFacet = {
-  name: "fitType",
+  name: "fit-type",
   displayName: "Fit Type",
   type: "multi",
   definition: {
