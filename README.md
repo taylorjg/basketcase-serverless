@@ -14,6 +14,6 @@ mock online store app selling washing machines.
 * Original front end: AngularJS 1.x
   * [repo](https://github.com/taylorjg/BasketCase)
   * [website on gh-pages](https://taylorjg.github.io/BasketCase)
-* Rewritten front end: React :construction:
+* Rewritten front end: React
   * [repo](https://github.com/taylorjg/basketcase-react)
   * [website on gh-pages](https://taylorjg.github.io/basketcase-react)
