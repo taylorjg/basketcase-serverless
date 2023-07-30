@@ -1,6 +1,6 @@
 {
   "name": "basketcase-serverless",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Serverless function that provides product and facet data to a mock online store app selling washing machines",
   "main": "index.js",
   "scripts": {
