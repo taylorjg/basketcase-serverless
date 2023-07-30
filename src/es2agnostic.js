@@ -4,10 +4,10 @@ const isFacetValueSelected = (selectedFacet, key) =>
   (selectedFacet?.selectedFacetValues ?? []).some((k) => k === key);
 
 const bucketToFacetValue = (selectedFacet, facetDescription) => (bucket) => {
-  const { displayNameFormatter, noAltKeys } = facetDescription;
+  const { displayNameFormatter } = facetDescription;
   const { key } = bucket;
   const displayName = displayNameFormatter ? displayNameFormatter(bucket) : key;
-  const altKey = noAltKeys ? key : keyToAltKey(key);
+  const altKey = keyToAltKey(facetDescription, key);
 
   return {
     displayName,

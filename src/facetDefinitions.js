@@ -1,19 +1,30 @@
 import { makeTermsFilter, makeRangeFilter } from "./facetDefinitionsUtils";
 
-export const keyToAltKey = (key) => {
-  const altKey = key.toLowerCase().replaceAll(" ", "-");
-  // Only use 'altKey' if we can successfully convert it back to 'key' otherwise just return `key' unaltered.
-  return altKeyToKey(altKey) === key ? altKey : key;
-};
+const identity = (x) => x;
 
-const capitalise = (s) => {
+const capitaliseFirstChar = (s) => {
   const [firstChar, ...remainingChars] = Array.from(s);
   return [firstChar.toUpperCase(), ...remainingChars].join("");
 };
 
-export const altKeyToKey = (altKey) => {
+const keyToAltKeyDefaultFn = (key) => key.toLowerCase().replaceAll(" ", "-");
+
+const altKeyToKeyDefaultFn = (altKey) => {
   const words = altKey.split("-");
-  return words.map(capitalise).join(" ");
+  return words.map(capitaliseFirstChar).join(" ");
+};
+
+export const keyToAltKey = (facetDescription, key) => {
+  const keyToAltKeyFn = facetDescription.keyToAltKey ?? keyToAltKeyDefaultFn;
+  const altKeyToKeyFn = facetDescription.altKeyToKey ?? altKeyToKeyDefaultFn;
+  const altKey = keyToAltKeyFn(key);
+  // Only use 'altKey' if we can successfully convert it back to 'key' otherwise just return `key' unaltered.
+  return altKeyToKeyFn(altKey) === key ? altKey : key;
+};
+
+export const altKeyToKey = (facetDescription) => (altKey) => {
+  const altKeyToKeyFn = facetDescription.altKeyToKey ?? altKeyToKeyDefaultFn;
+  return altKeyToKeyFn(altKey);
 };
 
 const makeRangeKey = (from, to) => {
@@ -106,7 +117,6 @@ const priceFacet = {
   name: "price",
   displayName: "Price",
   type: "single",
-  noAltKeys: true,
   definition: {
     range: {
       field: "Price",
@@ -115,6 +125,28 @@ const priceFacet = {
   },
   makeFilter: makeRangeFilter("Price", priceRanges),
   displayNameFormatter: priceRangeDisplayNameFormatter,
+  keyToAltKey: identity,
+  altKeyToKey: identity,
 };
 
-export const facetDescriptions = [fitTypeFacet, brandFacet, colourFacet, priceFacet];
+const energyRatingFacet = {
+  name: "energy-rating",
+  displayName: "Energy Rating",
+  type: "multi",
+  definition: {
+    terms: {
+      field: "EnergyRating.keyword",
+    },
+  },
+  makeFilter: makeTermsFilter("EnergyRating.keyword"),
+  keyToAltKey: (key) => key.replaceAll("+", "plus").toLowerCase(),
+  altKeyToKey: (altKey) => altKey.replaceAll("plus", "+").toUpperCase(),
+};
+
+export const facetDescriptions = [
+  fitTypeFacet,
+  brandFacet,
+  colourFacet,
+  priceFacet,
+  energyRatingFacet,
+];

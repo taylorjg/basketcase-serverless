@@ -22,7 +22,7 @@ describe("searchServiceImpl tests", () => {
     console.log("searchServiceImpl result:", JSON.stringify(result, null, 2));
 
     const { facets } = result;
-    expect(facets).toHaveLength(4);
+    expect(facets).toHaveLength(5);
 
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();

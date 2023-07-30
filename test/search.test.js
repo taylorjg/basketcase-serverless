@@ -13,7 +13,8 @@ describe("search tests", () => {
     expect(results.total).toBe(60);
     expect(results.products).toHaveLength(10);
 
-    expect(facets).toHaveLength(4);
+    expect(facets).toHaveLength(5);
+
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();
 
@@ -33,7 +34,8 @@ describe("search tests", () => {
     expect(results.total).toBe(4);
     expect(results.products).toHaveLength(4);
 
-    expect(facets).toHaveLength(4);
+    expect(facets).toHaveLength(5);
+
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();
 

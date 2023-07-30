@@ -100,9 +100,9 @@ const toSelectedFacets = (searchOptionsFilters) =>
     const facetDescription = facetDescriptions.find(
       ({ name }) => name === searchOptionsFilter.name
     );
-    const selectedFacetValues = facetDescription?.noAltKeys
-      ? searchOptionsFilter.keys
-      : searchOptionsFilter.keys.map(altKeyToKey);
+    const selectedFacetValues = facetDescription
+      ? searchOptionsFilter.keys.map(altKeyToKey(facetDescription))
+      : searchOptionsFilter.keys;
     return {
       name: searchOptionsFilter.name,
       selectedFacetValues,
