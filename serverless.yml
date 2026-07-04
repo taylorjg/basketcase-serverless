@@ -1,18 +1,18 @@
-frameworkVersion: '3'
-org: taylorjg
-app: basketcase
 service: basketcase
+
+build:
+  esbuild:
+    bundle: true
+    minify: true
 
 provider:
   name: aws
+  profile: taylorjg
   runtime: nodejs18.x
   environment:
-    BONSAI_URL: ${param:bonsaiUrl}
+    BONSAI_URL: ${env:BONSAI_URL}
   httpApi:
     cors: true
-
-plugins:
-  - serverless-webpack
 
 functions:
   search:
