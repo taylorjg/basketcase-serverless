@@ -30,7 +30,7 @@ const makeSearchOptions = (eventBody) => {
     sortBy: requestBody.sortBy ?? C.DEFAULT_SORT_BY,
     searchText: requestBody.searchText ?? C.DEFAULT_SEARCH_TEXT,
     filters:
-      newStyleFilters.length > 0 ? newStyleFilters : requestBody.filters ?? C.DEFAULT_FILTERS,
+      newStyleFilters.length > 0 ? newStyleFilters : (requestBody.filters ?? C.DEFAULT_FILTERS),
   };
 
   return searchOptions;
