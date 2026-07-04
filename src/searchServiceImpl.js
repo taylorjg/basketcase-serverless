@@ -1,18 +1,14 @@
-import * as ES from "elasticsearch";
+import { Client } from "@elastic/elasticsearch";
 
 import { esResponseToAgnosticResponse } from "./es2agnostic";
 import { facetDescriptions, altKeyToKey } from "./facetDefinitions";
 import * as C from "./constants";
 
-const esConfig = {
-  host: process.env.BONSAI_URL ?? "localhost:9200",
-};
-
-const esClient = new ES.Client(esConfig);
+const esClient = new Client({
+  node: process.env.BONSAI_URL ?? "http://localhost:9200",
+});
 
 const INDEX_NAME = "products";
-
-const TYPE_NAME = "washers";
 
 const FIELDS_TO_RETURN = [
   "Code",
@@ -148,7 +144,6 @@ export const searchServiceImpl = async (searchOptions) => {
 
   const esRequest = {
     index: INDEX_NAME,
-    type: TYPE_NAME,
     body: {
       query,
       size: searchOptions.pageSize,
@@ -169,13 +164,13 @@ export const searchServiceImpl = async (searchOptions) => {
 
   try {
     console.info("esRequest:", JSON.stringify(esRequest, null, 2));
-    const esResponse = await esClient.search(esRequest);
+    const { body: esResponse } = await esClient.search(esRequest);
     console.info("esResponse:", JSON.stringify(esResponse, null, 2));
     return esResponseToAgnosticResponse(esResponse, selectedFacets);
   } catch (error) {
-    if (error.displayName && error.statusCode) {
+    if (error.meta?.statusCode) {
       console.error(
-        `[searchServiceImpl]: ${error.displayName} (${error.statusCode}) ${error.message}`
+        `[searchServiceImpl]: ResponseError (${error.meta.statusCode}) ${error.message}`
       );
     } else {
       console.error(`[searchServiceImpl]: ${error.message}`);
