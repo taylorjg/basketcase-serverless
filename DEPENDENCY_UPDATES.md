@@ -43,3 +43,17 @@ These can be revisited when:
 
 - `eslint-plugin-vitest` adds ESLint 10 support, or
 - The Bonsai cluster is upgraded to Elasticsearch 8+
+
+## Dependabot
+
+[Dependabot](https://docs.github.com/en/code-security/dependabot) is configured in `.github/dependabot.yml` to check npm and GitHub Actions dependencies weekly.
+
+Pinning in `package.json` alone does not stop Dependabot from proposing updates. The following `ignore` rules enforce the decisions above:
+
+| Package | Ignore rule |
+|---|---|
+| `@elastic/elasticsearch` | All updates |
+| `eslint` | Major version updates only |
+| `@eslint/js` | Major version updates only |
+
+Remove or adjust these rules when revisiting the intentionally held-back packages.
