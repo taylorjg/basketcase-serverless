@@ -1,14 +1,10 @@
 import "dotenv/config";
-import axios from "axios";
 
-import { findFacet, findFacetValue } from "./testHelpers";
-
-axios.defaults.baseURL = process.env.SERVERLESS_URL;
+import { findFacet, findFacetValue, invokeSearchHandler } from "./testHelpers";
 
 describe("search tests", () => {
   it("vanilla", async () => {
-    const response = await axios.post("/api/search");
-    const { results, facets } = response.data;
+    const { results, facets } = await invokeSearchHandler();
 
     expect(results.total).toBe(60);
     expect(results.products).toHaveLength(10);
@@ -28,8 +24,7 @@ describe("search tests", () => {
   });
 
   it("with search text", async () => {
-    const response = await axios.post("/api/search", { searchText: "candy" });
-    const { results, facets } = response.data;
+    const { results, facets } = await invokeSearchHandler({ searchText: "candy" });
 
     expect(results.total).toBe(4);
     expect(results.products).toHaveLength(4);

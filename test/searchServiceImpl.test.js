@@ -1,25 +1,16 @@
 import "dotenv/config";
 
-import { searchServiceImpl } from "../src/searchServiceImpl";
+import { findFacet, findFacetValue, invokeSearchHandler } from "./testHelpers";
 
-import { findFacet, findFacetValue } from "./testHelpers";
-
-describe("searchServiceImpl tests", () => {
+describe("search handler facet filter tests", () => {
   it("with some selected facets", async () => {
-    const searchOptions = {
-      pageSize: 10,
-      currentPage: 1,
-      sortBy: "price-low-to-high",
-      searchText: "",
+    const result = await invokeSearchHandler({
       filters: [
         { name: "brand", keys: ["samsung"] },
         { name: "colour", keys: ["silver", "stainless-steel"] },
       ],
-    };
-    const result = await searchServiceImpl(searchOptions);
+    });
     expect(result).toBeDefined();
-
-    console.log("searchServiceImpl result:", JSON.stringify(result, null, 2));
 
     const { facets } = result;
     expect(facets).toHaveLength(5);
