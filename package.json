@@ -1,13 +1,14 @@
 {
   "name": "basketcase-serverless",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Serverless function that provides product and facet data to a mock online store app selling washing machines",
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "test": "vitest run --reporter verbose",
-    "deploy": "serverless deploy",
     "info": "serverless info",
+    "deploy": "serverless deploy",
+    "logs": "serverless logs -f search",
     "invoke": "serverless invoke -f search",
     "invoke:jq": "serverless invoke -f search | jq '.body | fromjson'",
     "invoke:local": "serverless invoke local -f search"
