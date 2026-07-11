@@ -18,7 +18,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.13.0",
     "axios": "^1.18.1",
-    "serverless": "^4.38.1"
+    "serverless": "^4.39.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
