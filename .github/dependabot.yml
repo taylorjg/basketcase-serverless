@@ -5,6 +5,7 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    rebase-strategy: auto
     ignore:
       # Pinned for Bonsai ES 7 — any newer version breaks
       - dependency-name: "@elastic/elasticsearch"
@@ -19,3 +20,4 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    rebase-strategy: auto
