@@ -10,12 +10,6 @@ updates:
       # Pinned for Bonsai ES 7 — any newer version breaks
       - dependency-name: "@elastic/elasticsearch"
 
-      # Blocked until eslint-plugin-vitest supports ESLint 10
-      - dependency-name: "eslint"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@eslint/js"
-        update-types: ["version-update:semver-major"]
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
