@@ -33,6 +33,6 @@
   },
   "allowScripts": {
     "fsevents@2.3.3": true,
-    "serverless@4.39.0": true
+    "serverless@4.40.0": true
   }
 }
