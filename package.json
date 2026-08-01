@@ -2,7 +2,6 @@
   "name": "basketcase-serverless",
   "version": "0.0.22",
   "description": "Serverless function that provides product and facet data to a mock online store app selling washing machines",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",

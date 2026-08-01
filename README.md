@@ -18,9 +18,11 @@ mock online store app selling washing machines - see the [basketcase-react](http
   * [repo](https://github.com/taylorjg/BasketCase)
   * [website on gh-pages](https://taylorjg.github.io/BasketCase)
 
-# `@elastic/elasticsearch` version pinning
+# Elasticsearch 7 constraints
 
-The project uses the official `@elastic/elasticsearch` client against a Bonsai-hosted **Elasticsearch 7.x** cluster. The version is **pinned to `7.13.0`** (no `^` range in `package.json`) because newer client versions fail against this cluster:
+The project uses the official `@elastic/elasticsearch` client against a Bonsai-hosted **Elasticsearch 7.x** cluster on the **free tier**. There is no in-place upgrade in the Bonsai dashboard; moving to a newer version means provisioning a new cluster, reindexing, and updating `BONSAI_URL`. Elasticsearch 8 on Bonsai requires a paid plan, so this demo is likely to stay on ES 7 unless the hosting setup changes.
+
+The client version is **pinned to `7.13.0`** (no `^` range in `package.json`) because newer client versions fail against this cluster:
 
 | Client version | Failure |
 |---|---|
@@ -29,4 +31,14 @@ The project uses the official `@elastic/elasticsearch` client against a Bonsai-h
 
 **`7.13.0`** is the last release before the product-check was introduced (added in 7.14) and is the version recommended for Bonsai / open-source Elasticsearch 7.x clusters.
 
-[Dependabot](https://docs.github.com/en/code-security/dependabot) is configured to ignore all updates to `@elastic/elasticsearch`. Remove or adjust that rule in `.github/dependabot.yml` when the Bonsai cluster is upgraded to Elasticsearch 8+.
+[Dependabot](https://docs.github.com/en/code-security/dependabot) is configured to ignore all updates to `@elastic/elasticsearch`. Remove or adjust that rule in `.github/dependabot.yml` if the cluster is migrated to a version that supports a current client.
+
+## Downstream fallout
+
+The pinned client is CommonJS and uses dynamic `require()` for Node built-ins (`events`, `http`, and so on). That has a couple of practical consequences in this repo:
+
+**Do not set `"type": "module"` in `package.json`.** Serverless Framework v4 detects that flag and bundles the Lambda for ESM instead of CommonJS. The deployed function then fails at runtime with `Dynamic require of "events" is not supported`. Source files can still use `import`/`export` — Serverless esbuild converts them to a CommonJS bundle for Lambda.
+
+**Use `vite.config.mjs` for Vitest.** Without `"type": "module"`, a `vite.config.js` file that uses ESM syntax triggers a Vite warning about loading ESM as CommonJS. The `.mjs` extension makes the module format explicit for local tooling only; it does not affect the Lambda bundle.
+
+These constraints should disappear if the cluster is migrated to a newer Elasticsearch version (and the client pin is lifted). On free Bonsai that is a deliberate hosting migration, not a routine dependency update.
