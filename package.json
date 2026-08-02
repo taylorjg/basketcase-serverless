@@ -8,10 +8,10 @@
     "test": "vitest run --reporter verbose",
     "info": "SLS_AWS_SDK=3 serverless info",
     "deploy": "SLS_AWS_SDK=3 serverless deploy",
-    "logs": "SLS_AWS_SDK=3 serverless logs -f search",
-    "invoke": "SLS_AWS_SDK=3 serverless invoke -f search",
-    "invoke:jq": "SLS_AWS_SDK=3 serverless invoke -f search | jq '.body | fromjson'",
-    "invoke:local": "SLS_AWS_SDK=3 serverless invoke local -f search"
+    "invoke:local": "bash scripts/invoke-all-local.sh",
+    "invoke:deployed": "bash scripts/invoke-all-deployed.sh",
+    "invoke:curl": "bash scripts/curl-all.sh",
+    "check": "npm run lint && npm test && npm run invoke:local"
   },
   "author": "Jonathan Taylor",
   "license": "MIT",

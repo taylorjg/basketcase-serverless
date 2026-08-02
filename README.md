@@ -9,6 +9,32 @@ mock online store app selling washing machines - see the [basketcase-react](http
 * Elasticsearch (hosted on [Bonsai](https://bonsai.io/))
 * [Serverless Framework](https://www.serverless.com/)
 
+## Development
+
+```bash
+npm ci
+npm run lint              # ESLint (includes Prettier)
+npm test                  # Handler integration tests (live Bonsai Elasticsearch)
+npm run invoke:local      # Smoke-test handler via serverless invoke local
+npm run check             # lint + test + invoke:local (same as CI)
+```
+
+Post-deploy smoke tests (manual — requires AWS credentials and a deployed stack):
+
+```bash
+npm run invoke:deployed   # Invoke deployed Lambda
+npm run invoke:curl       # Hit deployed HTTP API
+```
+
+| Command | Network | Secrets / credentials |
+|---|---|---|
+| `npm test` | Yes (Bonsai) | `BONSAI_URL` |
+| `npm run invoke:local` | Yes (Bonsai) | `BONSAI_URL`, `SERVERLESS_ACCESS_KEY` |
+| `npm run invoke:deployed` | Yes (Bonsai + AWS) | `BONSAI_URL`, AWS profile, `SERVERLESS_ACCESS_KEY` |
+| `npm run invoke:curl` | Yes (deployed API + Bonsai) | None (uses URL in script) |
+
+Helper scripts live in `scripts/` (`invoke-all-local.sh`, `invoke-all-deployed.sh`, `curl-all.sh`).
+
 # Links
 
 * Rewritten front end: React
