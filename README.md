@@ -9,6 +9,12 @@ mock online store app selling washing machines - see the [basketcase-react](http
 * Elasticsearch (hosted on [Bonsai](https://bonsai.io/))
 * [Serverless Framework](https://www.serverless.com/)
 
+## API
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/search` | POST | Product and facet search against Elasticsearch |
+
 ## Development
 
 ```bash
@@ -34,6 +40,26 @@ npm run invoke:curl       # Hit deployed HTTP API
 | `npm run invoke:curl` | Yes (deployed API + Bonsai) | None (uses URL in script) |
 
 Helper scripts live in `scripts/` (`invoke-all-local.sh`, `invoke-all-deployed.sh`, `curl-all.sh`).
+
+## Deploy
+
+```bash
+npm run deploy
+npm run info
+```
+
+Deploy scripts set `SLS_AWS_SDK=3` for AWS SDK v3 compatibility with Serverless v4. AWS credentials (local profile `taylorjg`) are required; Serverless v4 also needs `SERVERLESS_ACCESS_KEY`.
+
+## CI
+
+GitHub Actions runs `npm run check` on every push and pull request. The `check` job is required for merges to `main`.
+
+CI requires repository secrets:
+
+| Secret | Used by |
+|---|---|
+| `BONSAI_URL` | Tests and local invoke (Elasticsearch connection string) |
+| `SERVERLESS_ACCESS_KEY` | Serverless Framework v4 CLI authentication |
 
 # Links
 
