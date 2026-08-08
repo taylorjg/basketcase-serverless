@@ -1,3 +1,5 @@
+[![CI/CD](https://github.com/taylorjg/basketcase-serverless/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/taylorjg/basketcase-serverless/actions/workflows/ci-cd.yml)
+
 # Description
 
 This repo contains a serverless function that provides product and facet data to a
