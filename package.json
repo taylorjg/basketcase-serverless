@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "test": "vitest run --reporter verbose",
+    "test": "vitest run",
     "info": "SLS_AWS_SDK=3 serverless info",
     "deploy": "SLS_AWS_SDK=3 serverless deploy",
     "invoke:local": "bash scripts/invoke-all-local.sh",
