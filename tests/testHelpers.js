@@ -12,5 +12,7 @@ export const findFacet = (facets, displayName) => {
 };
 
 export const findFacetValue = (facet, displayName) => {
-  return facet.facetValues.find((facetValue) => facetValue.displayName === displayName);
+  return facet.facetValues.find(
+    (facetValue) => facetValue.displayName === displayName
+  );
 };

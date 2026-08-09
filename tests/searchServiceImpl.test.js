@@ -18,7 +18,10 @@ describe("search handler facet filter tests", () => {
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();
 
-    const freeStandingFacetValue = findFacetValue(fitTypeFacet, "Free Standing");
+    const freeStandingFacetValue = findFacetValue(
+      fitTypeFacet,
+      "Free Standing"
+    );
     expect(freeStandingFacetValue).toBeDefined();
     expect(freeStandingFacetValue.count).toBe(2);
     expect(freeStandingFacetValue.selected).toBe(false);

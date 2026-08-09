@@ -25,7 +25,9 @@ const FIELDS_TO_RETURN = [
 
 const makeFacetFilterKvp = (selectedFacets) => (facetDescription) => {
   const name = facetDescription.name;
-  const selectedFacet = selectedFacets.find((selectedFacet) => selectedFacet.name === name);
+  const selectedFacet = selectedFacets.find(
+    (selectedFacet) => selectedFacet.name === name
+  );
   const selectedFacetValues = selectedFacet?.selectedFacetValues ?? [];
   const filter = selectedFacetValues.length
     ? facetDescription.makeFilter(selectedFacetValues)
@@ -45,30 +47,35 @@ const makeFacetFiltersDictionary = (facetDescriptions, selectedFacets) => {
   return Object.fromEntries(facetFiltersKvps);
 };
 
-const makeNestedAggregation = (facetFiltersDictionary) => (facetDescription) => {
-  const name = facetDescription.name;
+const makeNestedAggregation =
+  (facetFiltersDictionary) => (facetDescription) => {
+    const name = facetDescription.name;
 
-  const filtersForOtherFacetsKvps = Object.entries(facetFiltersDictionary)
-    .filter(([key]) => key !== name)
-    .map(([, value]) => value);
+    const filtersForOtherFacetsKvps = Object.entries(facetFiltersDictionary)
+      .filter(([key]) => key !== name)
+      .map(([, value]) => value);
 
-  const filter = {
-    bool: {
-      filter: filtersForOtherFacetsKvps,
-    },
+    const filter = {
+      bool: {
+        filter: filtersForOtherFacetsKvps,
+      },
+    };
+
+    const aggregation = {
+      filter,
+      aggregations: {
+        [name]: facetDescription.definition,
+      },
+    };
+
+    return [name, aggregation];
   };
 
-  const aggregation = {
-    filter,
-    aggregations: {
-      [name]: facetDescription.definition,
-    },
-  };
-
-  return [name, aggregation];
-};
-
-const makeAggregations = (queryFilters, facetDescriptions, facetFiltersDictionary) => {
+const makeAggregations = (
+  queryFilters,
+  facetDescriptions,
+  facetFiltersDictionary
+) => {
   const nestedAggregationsKvps = facetDescriptions.map(
     makeNestedAggregation(facetFiltersDictionary)
   );
@@ -132,8 +139,15 @@ export const searchServiceImpl = async (searchOptions) => {
   }
 
   const selectedFacets = toSelectedFacets(searchOptions.filters);
-  const facetFiltersDictionary = makeFacetFiltersDictionary(facetDescriptions, selectedFacets);
-  const aggregations = makeAggregations(queryFilters, facetDescriptions, facetFiltersDictionary);
+  const facetFiltersDictionary = makeFacetFiltersDictionary(
+    facetDescriptions,
+    selectedFacets
+  );
+  const aggregations = makeAggregations(
+    queryFilters,
+    facetDescriptions,
+    facetFiltersDictionary
+  );
   const facetFilters = Object.values(facetFiltersDictionary);
 
   const query = {

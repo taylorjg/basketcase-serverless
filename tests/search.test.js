@@ -14,7 +14,10 @@ describe("search tests", () => {
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();
 
-    const freeStandingFacetValue = findFacetValue(fitTypeFacet, "Free Standing");
+    const freeStandingFacetValue = findFacetValue(
+      fitTypeFacet,
+      "Free Standing"
+    );
     expect(freeStandingFacetValue).toBeDefined();
     expect(freeStandingFacetValue.count).toBe(48);
 
@@ -24,7 +27,9 @@ describe("search tests", () => {
   });
 
   it("with search text", async () => {
-    const { results, facets } = await invokeSearchHandler({ searchText: "candy" });
+    const { results, facets } = await invokeSearchHandler({
+      searchText: "candy",
+    });
 
     expect(results.total).toBe(4);
     expect(results.products).toHaveLength(4);
@@ -34,7 +39,10 @@ describe("search tests", () => {
     const fitTypeFacet = findFacet(facets, "Fit Type");
     expect(fitTypeFacet).toBeDefined();
 
-    const freeStandingFacetValue = findFacetValue(fitTypeFacet, "Free Standing");
+    const freeStandingFacetValue = findFacetValue(
+      fitTypeFacet,
+      "Free Standing"
+    );
     expect(freeStandingFacetValue).toBeDefined();
     expect(freeStandingFacetValue.count).toBe(3);
 

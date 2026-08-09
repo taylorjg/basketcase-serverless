@@ -5,7 +5,9 @@ export const makeTermsFilter = (field) => (selectedFacetValues) => ({
 });
 
 export const makeRangeFilter = (field, ranges) => (selectedFacetValues) => {
-  const selectedRanges = ranges.filter((range) => selectedFacetValues.includes(range.key));
+  const selectedRanges = ranges.filter((range) =>
+    selectedFacetValues.includes(range.key)
+  );
 
   if (selectedRanges.length === 0) {
     return undefined;

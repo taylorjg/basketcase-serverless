@@ -7,15 +7,15 @@ mock online store app selling washing machines - see the [basketcase-react](http
 
 # Technologies
 
-* Node.js
-* Elasticsearch (hosted on [Bonsai](https://bonsai.io/))
-* [Serverless Framework](https://www.serverless.com/)
+- Node.js
+- Elasticsearch (hosted on [Bonsai](https://bonsai.io/))
+- [Serverless Framework](https://www.serverless.com/)
 
 ## API
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/search` | POST | Product and facet search against Elasticsearch |
+| Endpoint      | Method | Description                                    |
+| ------------- | ------ | ---------------------------------------------- |
+| `/api/search` | POST   | Product and facet search against Elasticsearch |
 
 ## Development
 
@@ -34,12 +34,12 @@ npm run invoke:deployed   # Invoke deployed Lambda
 npm run invoke:curl       # Hit deployed HTTP API
 ```
 
-| Command | Network | Secrets / credentials |
-|---|---|---|
-| `npm test` | Yes (Bonsai) | `BONSAI_URL` |
-| `npm run invoke:local` | Yes (Bonsai) | `BONSAI_URL`, `SERVERLESS_ACCESS_KEY` |
-| `npm run invoke:deployed` | Yes (Bonsai + AWS) | `BONSAI_URL`, AWS profile, `SERVERLESS_ACCESS_KEY` |
-| `npm run invoke:curl` | Yes (deployed API + Bonsai) | None (uses URL in script) |
+| Command                   | Network                     | Secrets / credentials                              |
+| ------------------------- | --------------------------- | -------------------------------------------------- |
+| `npm test`                | Yes (Bonsai)                | `BONSAI_URL`                                       |
+| `npm run invoke:local`    | Yes (Bonsai)                | `BONSAI_URL`, `SERVERLESS_ACCESS_KEY`              |
+| `npm run invoke:deployed` | Yes (Bonsai + AWS)          | `BONSAI_URL`, AWS profile, `SERVERLESS_ACCESS_KEY` |
+| `npm run invoke:curl`     | Yes (deployed API + Bonsai) | None (uses URL in script)                          |
 
 Helper scripts live in `scripts/` (`invoke-all-local.sh`, `invoke-all-deployed.sh`, `curl-all.sh`).
 
@@ -58,19 +58,19 @@ GitHub Actions runs `npm run check` on every push and pull request. The `check` 
 
 CI requires repository secrets:
 
-| Secret | Used by |
-|---|---|
-| `BONSAI_URL` | Tests and local invoke (Elasticsearch connection string) |
-| `SERVERLESS_ACCESS_KEY` | Serverless Framework v4 CLI authentication |
+| Secret                  | Used by                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `BONSAI_URL`            | Tests and local invoke (Elasticsearch connection string) |
+| `SERVERLESS_ACCESS_KEY` | Serverless Framework v4 CLI authentication               |
 
 # Links
 
-* Rewritten front end: React
-  * [repo](https://github.com/taylorjg/basketcase-react)
-  * [website on gh-pages](https://taylorjg.github.io/basketcase-react)
-* Original front end: AngularJS 1.x
-  * [repo](https://github.com/taylorjg/BasketCase)
-  * [website on gh-pages](https://taylorjg.github.io/BasketCase)
+- Rewritten front end: React
+  - [repo](https://github.com/taylorjg/basketcase-react)
+  - [website on gh-pages](https://taylorjg.github.io/basketcase-react)
+- Original front end: AngularJS 1.x
+  - [repo](https://github.com/taylorjg/BasketCase)
+  - [website on gh-pages](https://taylorjg.github.io/BasketCase)
 
 # Elasticsearch 7 constraints
 
@@ -78,10 +78,10 @@ The project uses the official `@elastic/elasticsearch` client against a Bonsai-h
 
 The client version is **pinned to `7.13.0`** (no `^` range in `package.json`) because newer client versions fail against this cluster:
 
-| Client version | Failure |
-|---|---|
-| **v9** | `406` — unsupported `Content-Type: application/vnd.elasticsearch+json; compatible-with=9` header |
-| **v7.17** | Product check rejects Bonsai as a non-Elastic distribution (`UnsupportedProductError`) |
+| Client version | Failure                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| **v9**         | `406` — unsupported `Content-Type: application/vnd.elasticsearch+json; compatible-with=9` header |
+| **v7.17**      | Product check rejects Bonsai as a non-Elastic distribution (`UnsupportedProductError`)           |
 
 **`7.13.0`** is the last release before the product-check was introduced (added in 7.14) and is the version recommended for Bonsai / open-source Elasticsearch 7.x clusters.
 

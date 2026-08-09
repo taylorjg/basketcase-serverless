@@ -25,14 +25,21 @@ const bucketsToFacetValues = (selectedFacet, facetDescription, buckets) =>
 
 const esAggregationsToAgnosticFacets = (aggregations, selectedFacets = []) => {
   return facetDescriptions.map((facetDescription) => {
-    const selectedFacet = selectedFacets.find(({ name }) => name === facetDescription.name);
-    const aggregation = aggregations[facetDescription.name][facetDescription.name];
+    const selectedFacet = selectedFacets.find(
+      ({ name }) => name === facetDescription.name
+    );
+    const aggregation =
+      aggregations[facetDescription.name][facetDescription.name];
 
     return {
       name: facetDescription.name,
       displayName: facetDescription.displayName,
       type: facetDescription.type,
-      facetValues: bucketsToFacetValues(selectedFacet, facetDescription, aggregation.buckets),
+      facetValues: bucketsToFacetValues(
+        selectedFacet,
+        facetDescription,
+        aggregation.buckets
+      ),
     };
   });
 };
