@@ -29,7 +29,7 @@
     "globals": "^17.12.0",
     "prettier": "^3.9.6",
     "serverless": "^4.41.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "allowScripts": {
     "fsevents@2.3.3": true,
