@@ -6,6 +6,14 @@ updates:
     schedule:
       interval: weekly
     rebase-strategy: auto
+    groups:
+      dev-patch-minor:
+        applies-to: version-updates
+        dependency-type: development
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+        exclude-patterns:
+          - "@types/node"
     ignore:
       # Pinned for Bonsai ES 7 — any newer version breaks
       - dependency-name: "@elastic/elasticsearch"
