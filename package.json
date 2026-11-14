@@ -27,7 +27,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "globals": "^17.14.0",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.0",
     "serverless": "^4.46.0",
     "vitest": "^5.1.0"
   },
